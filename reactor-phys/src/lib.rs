@@ -9,8 +9,18 @@ mod tests {
 		let a = Fx32::new (5000);
 		let b = Fx32::new (4000);
 		
+		assert! (a == a, "eq");
+		assert! (b == b, "eq");
+		assert! (a != b, "eq");
+		
 		assert! ((a + b).x == 9000, "Fx32 add failed");
 		assert! ((a - b).x == 1000, "Fx32 sub failed");
 		assert! (-a.x == -5000, "Fx32 neg failed");
+		
+		let half = Fx32::from_float (0.5f32);
+		let quarter = Fx32::from_float (0.25f32);
+		let three_quarters = Fx32::from_float (0.75f32);
+		
+		assert! (half + quarter == three_quarters, "from_float / add failed");
     }
 }

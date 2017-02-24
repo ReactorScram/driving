@@ -4,7 +4,7 @@ use std::ops::Add;
 use std::ops::Neg;
 use std::ops::Sub;
 
-#[derive (Clone, Copy)]
+#[derive (Clone, Copy, Eq, PartialEq)]
 pub struct Fx32 {
 	pub x: i32,
 }
@@ -14,6 +14,11 @@ impl Fx32 {
 		Fx32 {
 			x: x,
 		}
+	}
+	
+	pub fn from_float (x: f32) -> Fx32 {
+		// TODO: Magic number
+		Fx32::new ((x * 65536.0f32) as i32)
 	}
 }
 
