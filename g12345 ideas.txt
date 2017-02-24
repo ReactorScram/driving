@@ -1,0 +1,275 @@
+17:42 < g12345> https://www.rockpapershotgun.com/2017/02/09/the-fallen-price-of-indie-games/
+17:42 < g12345> i like the article... i really should read it :(
+17:44 < ReactorScram> tragically, g12345 has hit his reading cap for the day :(
+17:45 < g12345> it's past midnight
+17:45 < ReactorScram> Is it possible that the price is dropping in proportiong to the dropping quality
+17:49 < g12345> i dunno
+17:49 < ReactorScram> how much undiscovered country is there in the genre of "platformer" after all
+17:50 < g12345> lots
+17:51 < ReactorScram> And yet when I see something 'big' like Shovel Knight
+17:51 < ReactorScram> it's pixel art with a hero jumping around killing things 
+17:51 < ReactorScram> on platforms
+17:51 < ReactorScram> I need a new drug, metaphorically
+17:52 < g12345> what do you mean? you don t like it?
+17:52 -!- smoke_fumus [smoke_fumu@5BB09B.8A419B.4C231.ADA236.IP] has quit [Quit]
+17:54 < ReactorScram> I mean I think logically I must have watched the trailer
+17:54 < ReactorScram> and remembered none of it
+17:54 < ReactorScram> maybe it just needs a better trailer?
+17:55 < g12345> well, i thought it was just another platformer
+17:55 < g12345> then again i just played ducktales again
+17:56 < g12345> i could easily finish it long ago
+17:56 < g12345> but now i cant pass level 1
+17:58 < ReactorScram> that happens to me sometimes
+17:58 -!- splendor [textual@93822C.7C33C7.3F49FE.18D09E.IP] has quit [Quit]
+17:58 < ReactorScram> My thing with games is, I got bored of them
+17:58 < g12345> well that specific game has you to hold the down button constantly
+17:58 < ReactorScram> I'm waiting for something that has a new mechanic
+17:58 < ReactorScram> Like when Portal came out
+17:58 < g12345> my thumb cant handle that any more
+17:58 < ReactorScram> nobody had seen that in a big game
+17:58 < ReactorScram> weird
+17:58 -!- RicoTyrell [rico@AN-BF77F821.plus.com] has quit [Ping timeout]
+17:59 -!- Blecki [Tony@2FDD26.1B7F43.C24A41.293F37.IP] has joined #ludumdare
+17:59 -!- Blecki [Tony@2FDD26.1B7F43.C24A41.293F37.IP] has quit [Registered]
+17:59 -!- Blecki [Tony@jm.Users.AfterNET.Org] has joined #ludumdare
+17:59 < g12345> im more of a nintendo type guy in that sense
+17:59 < g12345> i like reinvention of the same over used mechanic
+17:59 < g12345> but now in a way that it's actually fun to play
+18:00 < g12345> yes, new idea are good too
+18:00 < g12345> but im more of the "fun" type
+18:00 -!- Mete- [joao@50732B.351074.247AD.1D7FB5.IP] has quit [Read error: EOF from client]
+18:01 < ReactorScram> I like having fun but most games don't strike me as fun anymore
+18:01 < g12345> that can happen
+18:01 < ReactorScram> For instance, I am still upset with Firewatch
+18:01 < g12345> i havent went to a toy shop in months now
+18:01 < ReactorScram> I paid $20 after seeing the trailer
+18:02 < ReactorScram> and thinking it would be a mystery game set in beautiful wilderness where I walk around and cool stuff happens
+18:02 < g12345> cool
+18:02 < ReactorScram> The first 10 minutes was litle trickles of walking interspersed with some CYOA thing
+18:02 < ReactorScram> That I really didn't care about
+18:02 < g12345> aha
+18:02 < ReactorScram> I think I was within my rights to give up on it
+18:03 < ReactorScram> Also it showed a picture of the main character and I couldn't identify with it
+18:03 < g12345> i am very picky with games too
+18:03 < ReactorScram> It felt like it was forcing me to be someone else not letting me
+18:03 < ReactorScram> brb
+18:03 < g12345> okay
+18:03 < g12345> i will read that article
+18:03 <%NeiloGD> o/
+18:03 < g12345> oi
+18:04 < g12345> i mean this article: https://www.rockpapershotgun.com/2017/02/09/the-fallen-price-of-indie-games/
+18:04 < ReactorScram> yea
+18:04 -!- tavis [tavis@AN-C81E47D8.utopiafiber.net] has quit [Ping timeout]
+18:06 < g12345> back already?
+18:06 < ReactorScram> no
+18:06 < g12345> okay, i will read more of the article then
+18:07 -!- Tijn [Tijn@Tijn.Users.AfterNET.Org] has quit [Quit: This computer has gone to sleep]
+18:08 -!- nander [nander@AN-9D40D342.student.utwente.nl] has quit [Read error: Connection reset by peer]
+18:08 -!- nander [nander@AN-9D40D342.student.utwente.nl] has joined #ludumdare
+18:10 < g12345> "Sales screw your fans. Your fans love your games and eagerly await your next release. They want to get your game as soon as it comes out, at full price. But they are foolish to do that, because a sale is right around the corner. Even in economic terms, the extra utility of playing the game early, at release, is not big enough to offset the extra cost for most people. It makes more sense to...
+18:10 < g12345> ...wait, unless they love you and your work so much that they're willing to throw economic reason out the window. It's nice to have fans that love your work that much. And these are the fans that you kick in the teeth when you put your game on sale."
+18:10 < g12345> Also
+18:10 < ReactorScram> hm
+18:10 < g12345> "If just half of the players who buy the game during a 50%-off sale would have bought the game at full price if that was their only option, we'd already have a wash. What fraction of sale-waiting players fall into this category? I suspect way more than half."
+18:10 < ReactorScram> back
+18:10 < g12345> anyway, i was saying
+18:10 < ReactorScram> inteersting point
+18:11 < g12345> that I was very picky with buying games now
+18:11 < ReactorScram> There is some traditional econ wisdom that if you lower prices you get more buyers and there is an ideal price point, but
+18:11 < g12345> and I must say, 90% of my steam bought games, I really like them
+18:11 < ReactorScram> but with games, the game is not something you need, they are basically all luxury goods to some extent
+18:11 < ReactorScram> And the market is very stateful based on previous prices and expected future prices
+18:11 < g12345> luxuries has a price point too
+18:12 < ReactorScram> Also consider that each game can only be bought once
+18:12 < ReactorScram> by a given person
+18:12 < g12345> ask nintendo for that :P
+18:12 < ReactorScram> true but generally you buy the game once
+18:12 -!- RicoTyrell [rico@AN-BF77F821.plus.com] has joined #ludumdare
+18:12 < ReactorScram> which means (most) every sale is a lost customer
+18:12 < g12345> or the music industry
+18:13 < g12345> well, i buy most games during steam sales now
+18:13 < ReactorScram> yeah it is more like music or movies or books
+18:13 < ReactorScram> it's shameful for a movie to be in the $5 bargain bin
+18:13 < ReactorScram> And I don't know if they go on sales or just taper the price gradually - but a hit movie may be $20 for years
+18:13 < g12345> not really
+18:13 < g12345> i dont buy movies even if the costs $1
+18:14 < g12345> i never have the time to watch them
+18:14 < ReactorScram> Well there was a time
+18:14 < ReactorScram> before you were born, when we had "DVDs"
+18:14 < ReactorScram> and people bought movies, on purpose
+18:14 < ReactorScram> to keep, even
+18:14 < g12345> on purpose??? lol
+18:14 < g12345> why you keep them if you dont watch them?
+18:14 < g12345> i played every game i bought on steam
+18:15 < g12345> sometimes a lot longer than most, too
+18:15 < ReactorScram> I only bought maybe 5 or 10 games on Steam ever
+18:15 < ReactorScram> I can't remember the last time I booted Steam
+18:15 < ReactorScram> I don't like games anymore :(
+18:15 < g12345> you're getting too old for games
+18:15 < ReactorScram> yes
+18:15 < g12345> as i said, i dont go to the toy shop any more
+18:15 < ReactorScram> Also, many of the games I have enjoyed, don't run at all in WINE
+18:16 < ReactorScram> Otherwise I would still be playing those games from 1998, 2005, etc.
+18:16 < g12345> my next computer will be linux too
+18:16 < g12345> so im not spending too much money on them
+18:16 < ReactorScram> So it's hard for me to say "I want to be a game developer" when I don't like games and I do'nt even know why
+18:17 < g12345> Funny, I know lots of people who say something like that
+18:17 < g12345> "I want to be A, but I dont like A"
+18:17 < ReactorScram> They say good writers have to read a lot of books
+18:18 < ReactorScram> I don't like books much either, not fiction books anyway
+18:18 < g12345> maybe
+18:18 -!- `2kah [quassel@F0B615.28E2E9.1D32A8.B995C5.IP] has quit [Ping timeout]
+18:18 < ReactorScram> I am not against reading, I just don't care for fiction
+18:18 < g12345> I only make certain games for example
+18:18 < ReactorScram> But I also don't practice writing so I'm not surprised that I am a bad writer, either way
+18:18 < g12345> games that I don't like to play, I can't make them
+18:18 < ReactorScram> yeah
+18:18 < ReactorScram> It's also hard to make MP games when you are working alone
+18:19 < ReactorScram> sort of a bootstrap paradox
+18:19 < g12345> I always make games for myself
+18:19 < g12345> so multiplayer... no
+18:19 < g12345> funny thing is, "games for myself" is a very good niche, in my case
+18:19 -!- `2kah [quassel@F0B615.28E2E9.1D32A8.B995C5.IP] has joined #ludumdare
+18:20 < ReactorScram> that's good
+18:22 < g12345> so if you found your own niche, you can still like making games
+18:22 < g12345> maybe the world dont make those games, but you can
+18:22 < ReactorScram> yeah
+18:23 < g12345> have you found your niche yet?
+18:23 < ReactorScram> Statistically the biggest slice of my games have been racing games
+18:24 < ReactorScram> they are easy to make and involve some fun programming
+18:24 < ReactorScram> But I haven't made any really good ones that people *want* to play
+18:24 < ReactorScram> It's very skill-based which makes it replayable but not fun for casual play
+18:24 < g12345> well, start with the person behind the mirror
+18:24 < ReactorScram> yeah
+18:24 < ReactorScram> I have not been doing my best on my games the last couple years
+18:25 < g12345> I find that very strange, that other people like the games I made mostly for myself
+18:25 < ReactorScram> well if you make it for yourself you will put more effort into making it good
+18:25 < ReactorScram> I believe even a niche game can become popular if it's just very good
+18:25 < g12345> if you make a game you like to play, there will be people who want to play them like you
+18:26 < g12345> dont try to make games for *other people*
+18:26 < g12345> FZero GX was also very skill based and not very casual,
+18:26 < ReactorScram> F-Zero GX was the inspiration for Super Jet Racing
+18:27 < g12345> but it has lots of fans
+18:27 < ReactorScram> I didn't get all the way there
+18:27 < g12345> I got stuck in level 2
+18:27 < ReactorScram> The thing is, I don't enjoy playing F-Zero
+18:27 < ReactorScram> it's really hard
+18:27 < ReactorScram> And not that rewarding
+18:27 < ReactorScram> I haven't bothered to turn on Dolphin
+18:27 < g12345> what would you change about it then?
+18:27 < ReactorScram> since new year's
+18:27 < ReactorScram> tbh I dont' think I like racing games
+18:27 < g12345> then make something else
+18:27 < ReactorScram> I don't like the pressure to perform constantly for 3 minutes
+18:28 < ReactorScram> With the only breaks being non-gameplay like menus
+18:28 < ReactorScram> Okay well let me tell you about a game that enthralled me for years
+18:28 < ReactorScram> Need For Speed Underground 2 was a racing game that was open-world, so I would go into free play mode and just drive around the highway that circled the city
+18:28 < g12345> okay
+18:28 < ReactorScram> at top speed
+18:28 < ReactorScram> in the maxed-car I'd customized
+18:28 < ReactorScram> and try not to hit traffic
+18:28 < g12345> yes
+18:28 < ReactorScram> Cause if you graze a car you get nitro but if you hit it you crash obviously
+18:29 < ReactorScram> I played this 'mode' when I was bored during classes, etc.
+18:29 < ReactorScram> Just trying to accumulate nitro and drive faster
+18:29 < g12345> mmm
+18:29 < ReactorScram> It wasn't stressful because there was no competing AI
+18:29 < ReactorScram> The civilian traffic just drives at a norml 60 MPH ish
+18:30 < g12345> have you played "Test Drive Unlimited"?
+18:30 < ReactorScram> I did it as a way to experience the graphics and sound and see how many cars I could graze without crashing
+18:30 < ReactorScram> no
+18:30 < g12345> It's also an open world game where you can just drive around an island and you dont have to do anything
+18:30 < g12345> Hawaiian island
+18:31 -!- awsumpwner27 [awsumpwner@AN-DE5378E4.dynamic.mtsallstream.net] has quit [Ping timeout]
+18:31 < ReactorScram> hm
+18:31 < ReactorScram> Maybe I should work on that
+18:31 < g12345> I think that's really something for you
+18:31 < ReactorScram> Streets of Simcity was similar
+18:31 < ReactorScram> It had a free drive mode
+18:31 < ReactorScram> and missions
+18:31 < ReactorScram> but there were no fixed tracks
+18:31 < ReactorScram> you could arm your car with missiles and such
+18:31 < g12345> yes, there are places where you can do missions
+18:31 < g12345> but you dont have to
+18:31 < ReactorScram> and just drive around blowing up buildings and cars
+18:31 < ReactorScram> a bit like GTA if you couldn't walk
+18:31 < g12345> and the island is a really large island too
+18:31 < ReactorScram> g12345: I think you're onto something
+18:32 < ReactorScram> I'll start small though
+18:32 < ReactorScram> I wonder if there is such a thing as a puzzle / driving or adventure / driving game
+18:32 < g12345> you should copy and keep this conversation
+18:32 < ReactorScram> where the pace is not "as fast as possible all the time"
+18:32 < g12345> and re-read this later
+18:32 < ReactorScram> yeah
+18:32 < ReactorScram> My IRC client has logging so I'll copy this out
+18:33 < g12345> Test Drive Unlimited isnt sold anymore on Steam, license is expired, but you can still buy it physically on ebay for example
+18:33 < ReactorScram> I think if I just write "streets / NFSUG2" on a sticky note and paste that on my tower I'll remember
+18:33 < ReactorScram> huh
+18:33 < ReactorScram> sounds like an open niche, then!
+18:33 < g12345> I remember driving for fun in TDU
+18:33 < g12345> watching the sun set
+18:33 < g12345> driving around
+18:33 < ReactorScram> the walking simulator of racing games
+18:34 < g12345> also you said this: "buying some game thinking it would be a mystery game set in beautiful wilderness where I walk around and cool stuff happens"
+18:34 < g12345> you like that idea too
+18:34 < ReactorScram> yes
+18:34 < ReactorScram> Fuel was sort of like what we're talking about
+18:34 < ReactorScram> a big procgen open world
+18:34 < ReactorScram> you would drive around and opt into missions / races
+18:34 < ReactorScram> but you could just explore and drive
+18:34 < ReactorScram> anywhere
+18:34 < g12345> yes
+18:34 < ReactorScram> That size of world is beyond me but the idea is not
+18:34 < g12345> !
+18:35 < ReactorScram> and it had all these biomes like burning forest fires, beaches, etc.
+18:35 < g12345> well, TDU did that using satellite imagery
+18:35 < ReactorScram> hm
+18:35 < ReactorScram> I don't want to be obligated to be realistic
+18:35 < g12345> you dont have to
+18:35 < g12345> outrun was fun too, for example
+18:36 < g12345> not because of the racing, but of the scenery
+18:36 < ReactorScram> was that the 2D one?
+18:36 < ReactorScram> psuedo3d arcade racing game?
+18:36 < g12345> i play outrun coast to coast now
+18:36 < ReactorScram> I think I know what you mean
+18:36 < ReactorScram> I have Cannonball on my Pandora which is a FOSS port of it
+18:36 < g12345> the latest version is fully 3d
+18:36 < ReactorScram> ah
+18:36 < g12345> but pseudo 3d is the original
+18:37 < ReactorScram> I was thinking of this guy https://en.wikipedia.org/wiki/Out_Run
+18:37 < ReactorScram> didn't know they made a sequele
+18:37 < ReactorScram> also quick joke, if a game's story never gets continued, is that game NoSQL
+18:37 < g12345> https://en.wikipedia.org/wiki/OutRun_2006:_Coast_2_Coast
+18:37 < g12345> :P
+18:38 < g12345> I've seen both OutRun and OutRun 2 in the arcades
+18:38 < g12345> but i somehow dont play them in those places
+18:39 < ReactorScram> The port I have, Cannonball, is hard
+18:39 < ReactorScram> I am not great at racing games
+18:39 < g12345> I did played mario kart in the arcade hall
+18:39 < ReactorScram> It seems the car never turns tight enough nor drives fast enough
+18:39 < ReactorScram> Mario Kart is my kinda game
+18:39 < ReactorScram> you can hold the throttle down and win
+18:39 < ReactorScram> but it is a racing game
+18:39 < ReactorScram> So if I mix Streets, NFSUG2, and Fuel I can get some good ideas
+18:39 < g12345> OuRun is all about drifting and slipstream
+18:40 < ReactorScram> I didn't know you could drift
+18:40 < kdrnic> my economic theory is that the cost of creative works should be enough to pay those who made it for their time and fund the next venture, and no more
+18:40 < g12345> thats not a venture
+18:41 < g12345> anyway, i'd keep this conversation if I were you
+18:41 < g12345> and I should try to go to bed soon
+18:41 < ReactorScram> yeah
+18:41 < ReactorScram> gn g12345 
+18:41 < ReactorScram> I will think on this some more
+18:41 < g12345> thanks for the chat
+18:41 < g12345> i think you can be a good gamedev after all
+18:41 < kdrnic> !define venture
+18:41 < yaib> venture n 1: any venturesome undertaking especially one with an uncertain outcome 2: an investment that is very risky but could yield great profits; "he knew the stock was a speculation when he bought it" [syn: {speculation}] 3: a commercial undertaking that ...
+18:41 < kdrnic> the way I see it fits perfectly the first definition
+18:41 < g12345> see ^2
+18:42 < kdrnic> words have more than one meaning
+18:42 < kdrnic> it is the wonders of the human language
+18:42 < ReactorScram> games are ventures, no?
+18:42 < g12345> ReactorScram: also, try to find TDU, it's a great game
+18:42 < ReactorScram> you are venturing to develop a game
+18:42 < kdrnic> yes
+18:42 < ReactorScram> g12345: I'll look up some no-commentary LPs
