@@ -10,6 +10,7 @@ mod tests {
 		let b = Fx32::new (4000);
 		
 		assert! ((a + b).x == 9000, "Fx32 add failed");
-		assert! ((a + b).x == 9000, "Fx32 add failed");
+		assert! ((a - b).x == 1000, "Fx32 sub failed");
+		assert! (-a.x == -5000, "Fx32 neg failed");
     }
 }
