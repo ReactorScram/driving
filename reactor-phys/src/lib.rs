@@ -41,5 +41,9 @@ mod tests {
 		math should be fine and that's a bigger world than I could create.
 		*/
 		assert! (Fx32::mul_64 (Fx32::from_float (1.0f32 / 16384.0f32), Fx32::from_float (16384.0f32)) == Fx32::from_float (1.0f32), "mul_64");
+		
+		assert! (Fx32::mul_small (Fx32::from_float (1.0f32 / 8192.0f32), Fx32::from_float (0.5f32)) == Fx32::from_float (1.0f32 / 16384.0f32), "mul_small");
+		
+		assert! (Fx32::mul_small (Fx32::from_float (1.0f32), Fx32::from_float (1.5f32)) == Fx32::from_float (1.5f32), "mul_small");
     }
 }

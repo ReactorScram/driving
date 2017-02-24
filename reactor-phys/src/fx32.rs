@@ -22,6 +22,7 @@ impl Fx32 {
 		Fx32::new ((x * 65536.0f32) as i32)
 	}
 	
+	// More precise and automatic but requires a branch
 	pub fn mul_precise (self, o: Fx32) -> Fx32 {
 		let a = self.x;
 		let b = o.x;
@@ -32,6 +33,15 @@ impl Fx32 {
 		else {
 			Fx32::new ((a) * (b / 256) / 256)
 		}
+	}
+	
+	// For multiplying two numbers <= 1.0 such as
+	// color mixing or dotting unit vectors
+	pub fn mul_small (self, o: Fx32) -> Fx32 {
+		let a = self.x;
+		let b = o.x;
+		
+		Fx32::new (((a / 2) * (b / 2)) / 16384)
 	}
 	
 	/*
