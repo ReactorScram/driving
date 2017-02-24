@@ -1,4 +1,4 @@
-mod fx32;
+pub mod fx32;
 
 #[cfg(test)]
 mod tests {
