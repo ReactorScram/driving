@@ -33,6 +33,16 @@ impl Fx32 {
 			Fx32::new ((a) * (b / 256) / 256)
 		}
 	}
+	
+	/*
+	I think this is the canonical way to do it,
+	but it does require i64. Will need performance testing
+	on the Pandora.
+	*/
+	pub fn mul_64 (self, o: Fx32) -> Fx32 {
+		let c = self.x as i64 * o.x as i64;
+		Fx32::new ((c / 65536) as i32)
+	}
 }
 
 impl Add <Fx32> for Fx32 {

@@ -31,5 +31,15 @@ mod tests {
 		assert! (Fx32::from_float (1.0f32 / 256.0f32) * Fx32::from_float (1.0f32 / 128.0f32) == Fx32::from_float (1.0f32 / 128.0f32 / 256.0f32), "small * small mul");
 		
 		assert! (Fx32::mul_precise (Fx32::from_float (1.0f32 / 1024.0f32), Fx32::from_float (1024.0f32)) == Fx32::from_float (1.0f32), "small * big mul");
+		
+		/*
+		Remember, i32 is signed, so our 16.16 is really 15.16
+		plus one sign bit
+		If we scale this to meters, we have no more than
+		32 km negative and positive, with 1/65 millimeter granularity.
+		For my plan, this is fine, if I stay within 10 km each way the
+		math should be fine and that's a bigger world than I could create.
+		*/
+		assert! (Fx32::mul_64 (Fx32::from_float (1.0f32 / 16384.0f32), Fx32::from_float (16384.0f32)) == Fx32::from_float (1.0f32), "mul_64");
     }
 }
