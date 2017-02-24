@@ -9,6 +9,7 @@ mod tests {
 		let a = Fx32::new (5000);
 		let b = Fx32::new (4000);
 		
-		assert! (Fx32::add (&a, &b).x == 9000, "It's not exactly NINE THOUSAND!");
+		assert! ((a + b).x == 9000, "Fx32 add failed");
+		assert! ((a + b).x == 9000, "Fx32 add failed");
     }
 }
