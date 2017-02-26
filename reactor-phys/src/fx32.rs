@@ -7,7 +7,12 @@ use std::ops::Mul;
 
 // TODO: Typedef Int = i32 or something
 
-pub const HALF_FRACTIONAL_BITS: i32 = 8;
+// Adjust this to balance between range and granularity
+// 6 --> 20.12
+// 8 --> 16.16
+// 10 --> 12.20
+pub const HALF_FRACTIONAL_BITS: i32 = 6;
+
 pub const FRACTIONAL_BITS: i32 = HALF_FRACTIONAL_BITS * 2;
 pub const ROOT_DENOMINATOR: i32 = 1 << HALF_FRACTIONAL_BITS;
 pub const DENOMINATOR: i32 = 1 << FRACTIONAL_BITS;
