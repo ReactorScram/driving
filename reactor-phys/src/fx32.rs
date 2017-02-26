@@ -47,7 +47,7 @@ impl Fx32 {
 		let a = self.x;
 		let b = o.x;
 		
-		Fx32::new (((a / 2) * (b / 2)) / 16384)
+		Fx32::new (((a / 2) * (b / 2)) / (DENOMINATOR / 4))
 	}
 	
 	/*
