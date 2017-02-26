@@ -7,7 +7,9 @@ use std::ops::Mul;
 
 // TODO: Typedef Int = i32 or something
 
-pub const FRACTIONAL_BITS: i32 = 16;
+pub const HALF_FRACTIONAL_BITS: i32 = 8;
+pub const FRACTIONAL_BITS: i32 = HALF_FRACTIONAL_BITS * 2;
+pub const ROOT_DENOMINATOR: i32 = 1 << HALF_FRACTIONAL_BITS;
 pub const DENOMINATOR: i32 = 1 << FRACTIONAL_BITS;
 
 #[derive (Clone, Copy, Eq, PartialEq)]
@@ -23,7 +25,7 @@ impl Fx32 {
 	}
 	
 	pub fn from_float (x: f32) -> Fx32 {
-		Fx32::new ((x * (DENOMINATOR as f32)) as i32)
+		Fx32::new ((x * DENOMINATOR as f32) as i32)
 	}
 	
 	// More precise and automatic but requires a branch
@@ -32,10 +34,10 @@ impl Fx32 {
 		let b = o.x;
 		
 		if a.abs () > b.abs () {
-			Fx32::new ((a / 256) * (b) / 256)
+			Fx32::new ((a / ROOT_DENOMINATOR) * (b) / ROOT_DENOMINATOR)
 		}
 		else {
-			Fx32::new ((a) * (b / 256) / 256)
+			Fx32::new ((a) * (b / ROOT_DENOMINATOR) / ROOT_DENOMINATOR)
 		}
 	}
 	
@@ -55,7 +57,7 @@ impl Fx32 {
 	*/
 	pub fn mul_64 (self, o: Fx32) -> Fx32 {
 		let c = self.x as i64 * o.x as i64;
-		Fx32::new ((c / 65536) as i32)
+		Fx32::new ((c / DENOMINATOR as i64) as i32)
 	}
 }
 
@@ -99,6 +101,6 @@ impl Mul <Fx32> for Fx32 {
 		We can do this by dividing both a and b by root c
 		*/
 		
-		Fx32::new ((self.x / 256) * (o.x / 256))
+		Fx32::new ((self.x / ROOT_DENOMINATOR) * (o.x / ROOT_DENOMINATOR))
 	}
 }
