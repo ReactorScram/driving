@@ -4,3 +4,8 @@ version = "0.1.0"
 authors = ["Anonymous <_>"]
 
 [dependencies]
+
+[dependencies.cgmath]
+git = "https://github.com/brendanzab/cgmath"
+# 0.12.0
+rev = "f6a68a1607032aec146db3f2f459bfb0df180608"

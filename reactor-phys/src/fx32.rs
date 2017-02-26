@@ -1,9 +1,14 @@
-// 16.16 fixed point
+// 32-bit fixed point. Haven't decided on the fractional bits yet
 
 use std::ops::Add;
 use std::ops::Neg;
 use std::ops::Sub;
 use std::ops::Mul;
+
+// TODO: Typedef Int = i32 or something
+
+pub const FRACTIONAL_BITS: i32 = 16;
+pub const DENOMINATOR: i32 = 1 << FRACTIONAL_BITS;
 
 #[derive (Clone, Copy, Eq, PartialEq)]
 pub struct Fx32 {
@@ -18,8 +23,7 @@ impl Fx32 {
 	}
 	
 	pub fn from_float (x: f32) -> Fx32 {
-		// TODO: Magic number
-		Fx32::new ((x * 65536.0f32) as i32)
+		Fx32::new ((x * (DENOMINATOR as f32)) as i32)
 	}
 	
 	// More precise and automatic but requires a branch

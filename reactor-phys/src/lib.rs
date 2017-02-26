@@ -17,6 +17,9 @@ mod tests {
 		assert! ((a - b).x == 1000, "Fx32 sub failed");
 		assert! (-a.x == -5000, "Fx32 neg failed");
 		
+		assert_eq! (65536, super::fx32::DENOMINATOR, "Denominator is wrong");
+		assert_eq! (65536, Fx32::from_float (1.0f32).x, "Denominator applied wrong");
+		
 		let half = Fx32::from_float (0.5f32);
 		let quarter = Fx32::from_float (0.25f32);
 		let three_quarters = Fx32::from_float (0.75f32);
