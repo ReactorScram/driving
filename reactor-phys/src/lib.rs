@@ -26,7 +26,7 @@ mod tests {
 		assert! (half * half == quarter, "mul");
 		assert! (Fx32::from_float (1.0f32 / 256.0f32) * Fx32::from_float (512.0f32) == Fx32::from_float (2.0f32), "mul");
 		
-		assert! (Fx32::from_float (255.0f32) * Fx32::from_float (256.0f32) == Fx32::from_float (255.0f32 * 256.0f32), "big * big mul");
+		assert! (Fx32::from_float (181.0f32) * Fx32::from_float (181.0f32) == Fx32::from_float (181.0f32 * 181.0f32), "big * big mul");
 		
 		assert! (Fx32::from_float (1.0f32 / 256.0f32) * Fx32::from_float (1.0f32 / 128.0f32) == Fx32::from_float (1.0f32 / 128.0f32 / 256.0f32), "small * small mul");
 		
