@@ -5,16 +5,19 @@ pub mod vec4;
 #[cfg(test)]
 mod tests {
 	use super::fx32::Fx32;
-	/*
+	use super::vec2::Vec2;
+	
 	#[test]
 	fn vec () {
-		let a = vec2 (Fx32::from_int (2), Fx32::from_int (3));
-		let b = vec2 (Fx32::from_int (4), Fx32::from_int (5));
-		let c = vec2 (Fx32::from_int (6), Fx32::from_int (8));
+		let a = Vec2 {x: Fx32::from_int (2), y: Fx32::from_int (3)};
+		let b = Vec2 {x: Fx32::from_int (4), y: Fx32::from_int (5)};
+		let c = Vec2 {x: Fx32::from_int (6), y: Fx32::from_int (8)};
 		
 		assert_eq! (a + b, c, "Vector add");
+		
+		assert_eq! (Vec2 {x: Fx32::from_int (3), y: Fx32::from_int (4)}.length (), Fx32::from_int (5), "pythagorean triple");
 	}
-	*/
+	
 	#[test]
 	fn it_works() {
 		let a = Fx32::new (5000);
@@ -69,14 +72,14 @@ mod tests {
 		assert! (Fx32::mul_small (Fx32::from_float (1.0f32), Fx32::from_float (1.5f32)) == Fx32::from_float (1.5f32), "mul_small");
 		
 		assert! (Fx32::from_int (1).square_64 () == Fx32::from_int (1), "square");
-		assert! (Fx32::from_int (1).square_root_64 () == Fx32::from_int (1), "square_root");
+		assert! (Fx32::from_int (1).sqrt_64 () == Fx32::from_int (1), "square_root");
 		
 		assert! (Fx32::from_int (9).square_64 () == Fx32::from_int (81), "square");
-		assert! (Fx32::from_int (9).square_root_64 () == Fx32::from_int (3), "sqrt");
+		assert! (Fx32::from_int (9).sqrt_64 () == Fx32::from_int (3), "sqrt");
 		
 		// Biggest POT I can square with 20.12, but not the biggest int
 		assert! (Fx32::from_int (512).square_64 () == Fx32::from_int (512 * 512), "big square");
 		
-		assert! (Fx32::from_int (512 * 512).square_root_64 () == Fx32::from_int (512), "big sqrt");
+		assert! (Fx32::from_int (512 * 512).sqrt_64 () == Fx32::from_int (512), "big sqrt");
     }
 }

@@ -21,7 +21,7 @@ pub const FRACTIONAL_BITS: Int = HALF_FRACTIONAL_BITS * 2;
 pub const ROOT_DENOMINATOR: Int = 1 << HALF_FRACTIONAL_BITS;
 pub const DENOMINATOR: Int = 1 << FRACTIONAL_BITS;
 
-#[derive (Clone, Copy, Eq, PartialEq)]
+#[derive (Clone, Copy, Debug, Eq, PartialEq)]
 pub struct Fx32 {
 	pub x: Int,
 }
@@ -85,13 +85,23 @@ impl Fx32 {
 		Fx32::mul_64 (self, self)
 	}
 	
-	pub fn square_root_64 (self) -> Fx32 {
+	pub fn sqrt_64 (self) -> Fx32 {
 		Fx32 {
 			x: (self.x as DoubleInt * DENOMINATOR as DoubleInt).sqrt () as Int,
 		}
 	}
+	
+	pub fn to_f64 (&self) -> f64 {
+		self.x as f64 / DENOMINATOR as f64
+	}
 }
-
+/*
+impl fmt::Debug for Fx32 {
+    fn fmt (&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write! (f, "Fx32 ({})", self.to_f64 ())
+    }
+}
+*/
 impl Add <Fx32> for Fx32 {
 	type Output = Fx32;
 	
