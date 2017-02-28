@@ -115,7 +115,7 @@ impl Add <Fx32> for Fx32 {
 		Fx32::new (self.x + o.x)
 	}
 }
-
+/*
 // This is stupid
 impl <'a, 'b> Add <&'a Fx32> for &'b Fx32 {
 	type Output = Fx32;
@@ -124,7 +124,7 @@ impl <'a, 'b> Add <&'a Fx32> for &'b Fx32 {
 		Fx32::new (self.x + o.x)
 	}
 }
-
+*/
 impl Sub <Fx32> for Fx32 {
 	type Output = Fx32;
 	

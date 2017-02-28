@@ -1,11 +1,51 @@
+extern crate svg;
+
+pub mod circle;
 pub mod fx32;
+pub mod ray2;
+pub mod raytrace;
 pub mod vec2;
-pub mod vec4;
 
 #[cfg(test)]
 mod tests {
 	use super::fx32::Fx32;
 	use super::vec2::Vec2;
+	use super::svg::Document;
+	use super::svg::node::element::Path;
+	use super::svg::node::element::path::Data;
+	
+	#[test]
+	fn svg () {
+		let mut document = Document::new()
+			.set("viewBox", (0, 0, 512, 512));
+		
+		
+		
+		{
+			let mut particle = Vec2 {
+				x: Fx32::from_int (257),
+				y: Fx32::from_int (0),
+			};
+			
+			
+			let data = Data::new()
+				.move_to((10, 10))
+				.line_by((0, 50))
+				.line_by((50, 0))
+				.line_by((0, -50))
+				.close();
+			
+			let path = Path::new()
+				.set("fill", "none")
+				.set("stroke", "black")
+				.set("stroke-width", 3)
+				.set("d", data);
+			
+			document = document.add(path);
+		}
+		
+		super::svg::save("image.svg", &document).unwrap();
+	}
 	
 	#[test]
 	fn vec () {

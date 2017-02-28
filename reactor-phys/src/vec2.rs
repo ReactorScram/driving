@@ -20,17 +20,17 @@ impl fmt::Debug for Vec2 {
 */
 
 impl Vec2 {
-	pub fn length_sq (&self) -> Real {
+	pub fn length_sq (self) -> Real {
 		self * self
 	}
 	
-	pub fn length (&self) -> Real {
+	pub fn length (self) -> Real {
 		self.length_sq ().sqrt_64 ()
 	}
 	
 	// Given 2D space where X is right, and Y is up, like a math graph,
 	// Rotates 90 degrees anti-clockwise (positive)
-	pub fn cross (&self) -> Vec2 {
+	pub fn cross (self) -> Vec2 {
 		Vec2 {
 			x: -self.y,
 			y: self.x,
@@ -72,16 +72,16 @@ impl Neg for Vec2 {
 }
 
 // Dot product
-impl <'a, 'b> Mul <&'a Vec2> for &'b Vec2 {
+impl Mul <Vec2> for Vec2 {
 	type Output = Real;
 	
-	fn mul (self, o: &'a Vec2) -> Real {
+	fn mul (self, o: Vec2) -> Real {
 		self.x * o.x +
 		self.y * o.y
 	}
 }
 
-impl <'a> Mul <Real> for &'a Vec2 {
+impl Mul <Real> for Vec2 {
 	type Output = Vec2;
 	
 	fn mul (self, o: Real) -> Vec2 {
