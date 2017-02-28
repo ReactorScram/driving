@@ -171,13 +171,13 @@ mod tests {
 			"mul_64");
 		
 		assert_eq! (
-			Fx32::mul_small (Fx32::from_float (1.0f32 / 1024.0f32), 
+			Fx32::from_float (1.0f32 / 1024.0f32).mul_small (
 			Fx32::from_float (0.5f32)),
 			Fx32::from_float (1.0f32 / 2048.0f32), 
 			"mul_small");
 		
 		assert_eq! (
-			Fx32::mul_small (Fx32::from_float (1.0f32), 
+			Fx32::from_float (1.0f32).mul_small (
 			Fx32::from_float (1.5f32)),
 			Fx32::from_float (1.5f32), 
 			"mul_small");

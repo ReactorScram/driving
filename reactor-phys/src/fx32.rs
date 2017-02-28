@@ -67,11 +67,27 @@ impl Fx32 {
 	
 	// For multiplying two numbers <= 1.0 such as
 	// color mixing or dotting unit vectors
-	pub fn mul_small (self, o: Fx32) -> Fx32 {
+	pub fn mul_small (&self, o: Fx32) -> Fx32 {
 		let a = self.x;
 		let b = o.x;
 		
 		Fx32::new (((a / 2) * (b / 2)) / (DENOMINATOR / 4))
+	}
+	
+	pub fn mul_big (&self, o: Fx32) -> Fx32 {
+		/*
+		let c be the fixed point 'factor'
+		a = 1.0
+		b = 2.0
+		c = 65536
+		
+		(a * c) * (b * c) ---> (a * b * c)
+		
+		We must end up dividing by c
+		We can do this by dividing both a and b by root c
+		*/
+		
+		Fx32::new ((self.x / ROOT_DENOMINATOR) * (o.x / ROOT_DENOMINATOR))
 	}
 	
 	/*
@@ -155,19 +171,6 @@ impl Mul <Fx32> for Fx32 {
 	type Output = Fx32;
 	
 	fn mul (self, o: Fx32) -> Fx32 {
-		/*
-		let c be the fixed point 'factor'
-		a = 1.0
-		b = 2.0
-		c = 65536
-		
-		(a * c) * (b * c) ---> (a * b * c)
-		
-		We must end up dividing by c
-		We can do this by dividing both a and b by root c
-		*/
-		
-		//Fx32::new ((self.x / ROOT_DENOMINATOR) * (o.x / ROOT_DENOMINATOR))
 		Fx32::mul_64 (self, o)
 	}
 }
