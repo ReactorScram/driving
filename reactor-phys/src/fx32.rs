@@ -181,3 +181,15 @@ impl PartialOrd for Fx32 {
 		self.x.partial_cmp (&o.x)
 	}
 }
+
+impl PartialEq <i32> for Fx32 {
+	fn eq (&self, o: &i32) -> bool {
+		self.x == Fx32::from_int (*o).x
+	}
+}
+
+impl PartialOrd <i32> for Fx32 {
+	fn partial_cmp (&self, o: &i32) -> Option <Ordering> {
+		self.x.partial_cmp (&Fx32::from_int (*o).x)
+	}
+}

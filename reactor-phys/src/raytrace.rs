@@ -37,17 +37,20 @@ pub fn ray_trace_circle (ray: &Ray2, circle: &Circle) -> Ray2TraceResult {
 	
 	let ray_dot_circle = toward_circle * ray.dir;
 	
-	if ray_dot_circle < Fx32::from_int (0) {
+	if ray_dot_circle < 0 {
 		// Ray is heading out of the circle's space or is already out
 		return Ray2TraceResult::Miss;
 	}
 	
 	// TODO: Handle ray starting inside circle
+	// TODO: Circle-circle check to discard distant
+	// rays without overflowing Fx32
 	
 	// The following is derived from the quadratic formula and my Lua code
 	let a = ray.dir.length_sq ();
 	
-	if a == Fx32::from_int (0) {
+	if a == 0 {
+		// Prevent a divide-by-zero
 		return Ray2TraceResult::Miss;
 	}
 	
@@ -59,13 +62,14 @@ pub fn ray_trace_circle (ray: &Ray2, circle: &Circle) -> Ray2TraceResult {
 	let c = toward_circle.length_sq () - circle.radius.square_64 ();
 	
 	let quarter_determinant = half_b.square_64 () - a * c;
-	if quarter_determinant < Fx32::from_int (0) {
+	if quarter_determinant < 0 {
+		// Prevent imaginary numbers
 		return Ray2TraceResult::Miss;
 	}
 	
 	let t = (half_b - quarter_determinant.sqrt_64 ()) / a;
 	
-	if t >= Fx32::from_int (0) && t <= Fx32::from_int (1) {
+	if t >= 0 && t <= 1 {
 		let ccd_pos = ray.at (t);
 		
 		let normal = (ccd_pos - circle.center).normalized ();
