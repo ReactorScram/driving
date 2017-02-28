@@ -15,7 +15,15 @@ mod tests {
 		
 		assert_eq! (a + b, c, "Vector add");
 		
-		assert_eq! (Vec2 {x: Fx32::from_int (3), y: Fx32::from_int (4)}.length (), Fx32::from_int (5), "pythagorean triple");
+		assert_eq! (
+			Vec2 {x: Fx32::from_int (3), y: Fx32::from_int (4)}.length (), 
+			Fx32::from_int (5), 
+			"pythagorean triple");
+		
+		assert_eq! (
+			Vec2 {x: Fx32::from_int (10), y: Fx32::from_int (1)}.cross (),
+			Vec2 {x: Fx32::from_int (-1), y: Fx32::from_int (10)},
+			"2D cross product");
 	}
 	
 	#[test]
