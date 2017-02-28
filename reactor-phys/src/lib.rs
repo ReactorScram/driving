@@ -91,15 +91,33 @@ mod tests {
 			Fx32::from_int (64),
 			"div_64");
 		
-		assert! (Fx32::from_int (1).square_64 () == Fx32::from_int (1), "square");
-		assert! (Fx32::from_int (1).sqrt_64 () == Fx32::from_int (1), "square_root");
+		assert_eq! (
+			Fx32::from_int (1).square_64 (),
+			Fx32::from_int (1), 
+			"square");
+		assert_eq! (
+			Fx32::from_int (1).sqrt_64 (),
+			Fx32::from_int (1), 
+			"square_root");
 		
-		assert! (Fx32::from_int (9).square_64 () == Fx32::from_int (81), "square");
-		assert! (Fx32::from_int (9).sqrt_64 () == Fx32::from_int (3), "sqrt");
+		assert_eq! (
+			Fx32::from_int (9).square_64 (),
+			Fx32::from_int (81), 
+			"square");
+		assert_eq! (
+			Fx32::from_int (9).sqrt_64 (),
+			Fx32::from_int (3), 
+			"sqrt");
 		
 		// Biggest POT I can square with 20.12, but not the biggest int
-		assert! (Fx32::from_int (512).square_64 () == Fx32::from_int (512 * 512), "big square");
+		assert_eq! (
+			Fx32::from_int (512).square_64 (),
+			Fx32::from_int (512 * 512), 
+			"big square");
 		
-		assert! (Fx32::from_int (512 * 512).sqrt_64 () == Fx32::from_int (512), "big sqrt");
+		assert_eq! (
+			Fx32::from_int (512 * 512).sqrt_64 (),
+			Fx32::from_int (512), 
+			"big sqrt");
     }
 }
