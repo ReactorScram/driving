@@ -35,7 +35,7 @@ impl Vec2 {
 	
 	// Given 2D space where X is right, and Y is up, like a math graph,
 	// Rotates 90 degrees anti-clockwise (positive)
-	pub fn cross (self) -> Vec2 {
+	pub fn cross (&self) -> Vec2 {
 		Vec2 {
 			x: -self.y,
 			y: self.x,

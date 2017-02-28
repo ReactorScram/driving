@@ -22,7 +22,7 @@ mod tests {
 		let mut document = Document::new()
 			.set("viewBox", (0, 0, 512, 512));
 		
-		let scale = 64;
+		let scale = 1;
 		let scale_fx = Fx32::from_int (scale);
 		
 		let obstacle = vec! [
@@ -55,7 +55,7 @@ mod tests {
 			let mut data = Data::new().move_to(((particle.start.x * scale_fx).to_i32 (), (particle.start.y * scale_fx).to_i32 ()));
 			
 			for step in 0..10 {
-				let trace_result = obstacle.iter ().map(|obstacle: &Circle| raytrace::ray_trace_circle (&particle, obstacle)).fold ( raytrace::Ray2TraceResult::Miss, raytrace::fold_closer_result);
+				let trace_result = obstacle.iter ().map(|obstacle: &Circle| raytrace::ray_trace_circle_2 (&particle, obstacle)).fold ( raytrace::Ray2TraceResult::Miss, raytrace::fold_closer_result);
 				
 				match trace_result {
 					raytrace::Ray2TraceResult::Miss => {

@@ -48,6 +48,10 @@ impl Fx32 {
 		Fx32::from_q (x, 1)
 	}
 	
+	pub fn abs (&self) -> Fx32 {
+		Fx32::new (self.x.abs ())
+	}
+	
 	// More precise and automatic but requires a branch
 	pub fn mul_precise (self, o: Fx32) -> Fx32 {
 		let a = self.x;
