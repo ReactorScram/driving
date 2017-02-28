@@ -87,7 +87,7 @@ impl Fx32 {
 	
 	pub fn square_root_64 (self) -> Fx32 {
 		Fx32 {
-			x: (self.x * DENOMINATOR).sqrt (),
+			x: (self.x as DoubleInt * DENOMINATOR as DoubleInt).sqrt () as Int,
 		}
 	}
 }
