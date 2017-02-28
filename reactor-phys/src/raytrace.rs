@@ -49,7 +49,9 @@ pub fn ray_trace_circle (ray: &Ray2, circle: &Circle) -> Ray2TraceResult {
 		return Ray2TraceResult::Miss;
 	}
 	
-	let b = (ray.dir * toward_circle) * Fx32::from_int (-2);
+	// This part is different from the canonical quadratic formula
+	// I negated it because it will save a negation later on
+	let b = (ray.dir * toward_circle) * Fx32::from_int (2);
 	
 	let c = toward_circle.length_sq () - circle.radius.square_64 ();
 	
@@ -58,7 +60,7 @@ pub fn ray_trace_circle (ray: &Ray2, circle: &Circle) -> Ray2TraceResult {
 		return Ray2TraceResult::Miss;
 	}
 	
-	let t = (-b - determinant.sqrt_64 ()) / (Fx32::from_int (2) * a);
+	let t = (b - determinant.sqrt_64 ()) / (Fx32::from_int (2) * a);
 	
 	if t >= Fx32::from_int (0) && t <= Fx32::from_int (1) {
 		let ccd_pos = ray.at (t);
