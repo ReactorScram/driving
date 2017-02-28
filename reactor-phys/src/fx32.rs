@@ -33,6 +33,14 @@ impl Fx32 {
 		Fx32::new ((x * DENOMINATOR as f32) as i32)
 	}
 	
+	pub fn from_q (num: i32, den: i32) -> Fx32 {
+		Fx32::new ((num * DENOMINATOR) / den)
+	}
+	
+	pub fn from_int (x: i32) -> Fx32 {
+		Fx32::from_q (x, 1)
+	}
+	
 	// More precise and automatic but requires a branch
 	pub fn mul_precise (self, o: Fx32) -> Fx32 {
 		let a = self.x;
@@ -59,6 +67,10 @@ impl Fx32 {
 	I think this is the canonical way to do it,
 	but it does require i64. Will need performance testing
 	on the Pandora.
+	
+	I would recommend starting with this as a reference,
+	and dropping precision where we can afford it based on
+	regression testing.
 	*/
 	pub fn mul_64 (self, o: Fx32) -> Fx32 {
 		let c = self.x as i64 * o.x as i64;
@@ -70,6 +82,15 @@ impl Add <Fx32> for Fx32 {
 	type Output = Fx32;
 	
 	fn add (self, o: Fx32) -> Fx32 {
+		Fx32::new (self.x + o.x)
+	}
+}
+
+// This is stupid
+impl <'a, 'b> Add <&'a Fx32> for &'b Fx32 {
+	type Output = Fx32;
+	
+	fn add (self, o: &'a Fx32) -> Fx32 {
 		Fx32::new (self.x + o.x)
 	}
 }

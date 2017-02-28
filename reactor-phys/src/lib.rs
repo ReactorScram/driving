@@ -3,7 +3,16 @@ pub mod fx32;
 #[cfg(test)]
 mod tests {
 	use super::fx32::Fx32;
-	
+	/*
+	#[test]
+	fn vec () {
+		let a = vec2 (Fx32::from_int (2), Fx32::from_int (3));
+		let b = vec2 (Fx32::from_int (4), Fx32::from_int (5));
+		let c = vec2 (Fx32::from_int (6), Fx32::from_int (8));
+		
+		assert_eq! (a + b, c, "Vector add");
+	}
+	*/
 	#[test]
 	fn it_works() {
 		let a = Fx32::new (5000);
