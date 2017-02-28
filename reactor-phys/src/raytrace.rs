@@ -51,9 +51,7 @@ pub fn ray_trace_circle (ray: &Ray2, circle: &Circle) -> Ray2TraceResult {
 	
 	let b = (ray.dir * toward_circle) * Fx32::from_int (-2);
 	
-	let c = circle.center.length_sq () + ray.start.length_sq ()
-		- Fx32::from_int (2) * (circle.center * ray.start)
-		- circle.radius.square_64 ();
+	let c = toward_circle.length_sq () - circle.radius.square_64 ();
 	
 	let determinant = b * b - Fx32::from_int (4) * a * c;
 	if determinant < Fx32::from_int (0) {
