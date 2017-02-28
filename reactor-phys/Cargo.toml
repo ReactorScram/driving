@@ -5,7 +5,6 @@ authors = ["Anonymous <_>"]
 
 [dependencies]
 
-[dependencies.cgmath]
-git = "https://github.com/brendanzab/cgmath"
-# 0.12.0
-rev = "f6a68a1607032aec146db3f2f459bfb0df180608"
+[dependencies.int_traits]
+git = "https://github.com/tiehuis/int_traits"
+rev = "150ff52652cd700ae57e284c547b92673dac91c1"

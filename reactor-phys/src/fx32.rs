@@ -1,9 +1,12 @@
 // 32-bit fixed point. Haven't decided on the fractional bits yet
 
+extern crate int_traits;
+
 use std::ops::Add;
 use std::ops::Neg;
 use std::ops::Sub;
 use std::ops::Mul;
+use self::int_traits::IntTraits;
 
 type Int = i32;
 type DoubleInt = i64;
@@ -76,6 +79,16 @@ impl Fx32 {
 	pub fn mul_64 (self, o: Fx32) -> Fx32 {
 		let c = self.x as DoubleInt * o.x as DoubleInt;
 		Fx32::new ((c / DENOMINATOR as DoubleInt) as Int)
+	}
+	
+	pub fn square_64 (self) -> Fx32 {
+		Fx32::mul_64 (self, self)
+	}
+	
+	pub fn square_root_64 (self) -> Fx32 {
+		Fx32 {
+			x: (self.x * DENOMINATOR).sqrt (),
+		}
 	}
 }
 

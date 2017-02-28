@@ -1,4 +1,5 @@
 pub mod fx32;
+pub mod vec2;
 pub mod vec4;
 
 #[cfg(test)]
@@ -66,5 +67,11 @@ mod tests {
 		assert! (Fx32::mul_small (Fx32::from_float (1.0f32 / 1024.0f32), Fx32::from_float (0.5f32)) == Fx32::from_float (1.0f32 / 2048.0f32), "mul_small");
 		
 		assert! (Fx32::mul_small (Fx32::from_float (1.0f32), Fx32::from_float (1.5f32)) == Fx32::from_float (1.5f32), "mul_small");
+		
+		assert! (Fx32::from_q (1, 1).square_64 () == Fx32::from_q (1, 1), "square");
+		assert! (Fx32::from_q (1, 1).square_root_64 () == Fx32::from_q (1, 1), "square_root");
+		
+		assert! (Fx32::from_q (9, 1).square_64 () == Fx32::from_q (81, 1), "square");
+		assert! (Fx32::from_q (9, 1).square_root_64 () == Fx32::from_q (3, 1), "sqrt");
     }
 }
