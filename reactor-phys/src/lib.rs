@@ -46,17 +46,26 @@ mod tests {
 		let quarter = Fx32::from_float (0.25f32);
 		let three_quarters = Fx32::from_float (0.75f32);
 		
-		assert! (half + quarter == three_quarters, "from_float / add failed");
+		assert_eq! (half + quarter, three_quarters, "from_float / add failed");
 		
 		assert! (half * half == quarter, "mul");
 		assert! (Fx32::from_float (1.0f32 / 64.0f32) * Fx32::from_float (128.0f32) == Fx32::from_float (2.0f32), "mul");
 		
 		let biggest_root = 724.0f32;
-		assert! (Fx32::from_float (biggest_root) * Fx32::from_float (biggest_root) == Fx32::from_float (biggest_root * biggest_root), "big * big mul");
+		assert_eq! (
+			Fx32::from_float (biggest_root) * Fx32::from_float (biggest_root), 
+			Fx32::from_float (biggest_root * biggest_root), 
+			"big * big mul");
 		
-		assert! (Fx32::from_float (1.0f32 / 64.0f32) * Fx32::from_float (1.0f32 / 32.0f32) == Fx32::from_float (1.0f32 / 32.0f32 / 64.0f32), "small * small mul");
+		assert_eq! (
+			Fx32::from_float (1.0f32 / 64.0f32) * Fx32::from_float (1.0f32 / 32.0f32),
+			Fx32::from_float (1.0f32 / 32.0f32 / 64.0f32), 
+			"small * small mul");
 		
-		assert! (Fx32::mul_precise (Fx32::from_float (1.0f32 / 1024.0f32), Fx32::from_float (1024.0f32)) == Fx32::from_float (1.0f32), "small * big mul");
+		assert_eq! (
+			Fx32::mul_precise (Fx32::from_float (1.0f32 / 1024.0f32), Fx32::from_float (1024.0f32)),
+			Fx32::from_float (1.0f32), 
+			"small * big mul");
 		
 		/*
 		Remember, i32 is signed, so our 16.16 is really 15.16
@@ -73,12 +82,16 @@ mod tests {
 		I am trying 20.12 not because I need a bigger world but because
 		I want more headroom for multiplying large numbers.
 		*/
-		assert! (Fx32::mul_64 (Fx32::from_float (1.0f32 / 2048.0f32), Fx32::from_float (16384.0f32)) == Fx32::from_float (8.0f32), "mul_64");
+		assert_eq! (
+			Fx32::mul_64 (Fx32::from_float (1.0f32 / 2048.0f32), Fx32::from_float (16384.0f32)),
+			Fx32::from_float (8.0f32), 
+			"mul_64");
 		
 		assert_eq! (
 			Fx32::mul_small (Fx32::from_float (1.0f32 / 1024.0f32), 
 			Fx32::from_float (0.5f32)),
-			Fx32::from_float (1.0f32 / 2048.0f32), "mul_small");
+			Fx32::from_float (1.0f32 / 2048.0f32), 
+			"mul_small");
 		
 		assert_eq! (
 			Fx32::mul_small (Fx32::from_float (1.0f32), 
