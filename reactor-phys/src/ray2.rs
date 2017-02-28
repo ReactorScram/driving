@@ -2,8 +2,8 @@ use fx32::Fx32;
 use vec2::Vec2;
 
 pub struct Ray2 {
-	start: Vec2,
-	dir: Vec2,
+	pub start: Vec2,
+	pub dir: Vec2,
 }
 
 impl Ray2 {

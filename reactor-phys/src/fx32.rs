@@ -2,6 +2,8 @@
 
 extern crate int_traits;
 
+use std::cmp::Ordering;
+use std::cmp::PartialOrd;
 use std::ops::Add;
 use std::ops::Neg;
 use std::ops::Sub;
@@ -100,6 +102,10 @@ impl Fx32 {
 	pub fn to_f64 (&self) -> f64 {
 		self.x as f64 / DENOMINATOR as f64
 	}
+	
+	pub fn to_i32 (&self) -> i32 {
+		self.x / DENOMINATOR
+	}
 }
 /*
 impl fmt::Debug for Fx32 {
@@ -167,5 +173,11 @@ impl Div <Fx32> for Fx32 {
 	
 	fn div (self, o: Fx32) -> Fx32 {
 		Fx32::div_64 (self, o)
+	}
+}
+
+impl PartialOrd for Fx32 {
+	fn partial_cmp (&self, o: &Fx32) -> Option <Ordering> {
+		self.x.partial_cmp (&o.x)
 	}
 }

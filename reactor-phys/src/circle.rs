@@ -2,8 +2,8 @@ use fx32::Fx32;
 use vec2::Vec2;
 
 pub struct Circle {
-	center: Vec2,
-	radius: Fx32,
+	pub center: Vec2,
+	pub radius: Fx32,
 }
 
 impl Circle {

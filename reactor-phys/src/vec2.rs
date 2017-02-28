@@ -2,6 +2,7 @@ use std::ops::Add;
 use std::ops::Neg;
 use std::ops::Sub;
 use std::ops::Mul;
+use std::ops::Div;
 
 use fx32;
 type Real = fx32::Fx32;
@@ -28,6 +29,10 @@ impl Vec2 {
 		self.length_sq ().sqrt_64 ()
 	}
 	
+	pub fn normalized (self) -> Vec2 {
+		self / self.length ()
+	}
+	
 	// Given 2D space where X is right, and Y is up, like a math graph,
 	// Rotates 90 degrees anti-clockwise (positive)
 	pub fn cross (self) -> Vec2 {
@@ -35,6 +40,12 @@ impl Vec2 {
 			x: -self.y,
 			y: self.x,
 		}
+	}
+	
+	// o should be normalized
+	pub fn reflect (&self, o: &Vec2) -> Vec2 {
+		let projection = *self * *o;
+		*self - *o * (Real::from_int (2) * projection)
 	}
 }
 
@@ -88,6 +99,17 @@ impl Mul <Real> for Vec2 {
 		Vec2 {
 			x: self.x * o,
 			y: self.y * o,
+		}
+	}
+}
+
+impl Div <Real> for Vec2 {
+	type Output = Vec2;
+	
+	fn div (self, o: Real) -> Vec2 {
+		Vec2 {
+			x: self.x / o,
+			y: self.y / o,
 		}
 	}
 }
