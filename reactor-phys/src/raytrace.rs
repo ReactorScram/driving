@@ -1,38 +1,35 @@
 use circle::Circle;
 use fx32::Fx32;
 use ray2::Ray2;
-use std::iter::Iterator;
 use vec2::Vec2;
 
+#[derive (Clone, Copy)]
 pub enum Ray2TraceResult {
 	Hit (Fx32, Vec2, Vec2),
 	Miss,
 }
 
-pub fn closest_result (results: &mut Iterator <Item=Ray2TraceResult>) -> Ray2TraceResult {
-	let mut best = Ray2TraceResult::Miss;
-	
-	for res in results {
-		match res {
-			Ray2TraceResult::Miss => {
-				// Pass
-			},
-			Ray2TraceResult::Hit (res_t, ..) => {
-				match best {
-					Ray2TraceResult::Miss => {
-						best = res;
-					},
-					Ray2TraceResult::Hit (best_t, ..) => {
-						if res_t < best_t {
-							best = res;
-						}
+pub fn fold_closer_result (a: Ray2TraceResult, b: Ray2TraceResult) -> Ray2TraceResult {
+	match a {
+		Ray2TraceResult::Miss => {
+			return b;
+		},
+		Ray2TraceResult::Hit (a_t, ..) => {
+			match b {
+				Ray2TraceResult::Miss => {
+					return a;
+				},
+				Ray2TraceResult::Hit (b_t, ..) => {
+					if a_t < b_t {
+						return a;
+					}
+					else {
+						return b;
 					}
 				}
-			},
-		};
+			}
+		},
 	}
-	
-	best
 }
 
 pub fn ray_trace_circle (ray: &Ray2, circle: &Circle) -> Ray2TraceResult {

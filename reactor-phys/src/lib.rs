@@ -25,15 +25,25 @@ mod tests {
 		let scale = 64;
 		let scale_fx = Fx32::from_int (scale);
 		
-		let obstacle = Circle {
+		let obstacle = vec! [
+		Circle {
 			center: Vec2 {x: Fx32::from_q (256, scale), y: Fx32::from_q (500, scale)},
 			radius: Fx32::from_q (50, scale),
-		};
+		},
+		Circle {
+			center: Vec2 {x: Fx32::from_q (81, scale), y: Fx32::from_q (512 - 232, scale)},
+			radius: Fx32::from_q (40, scale),
+		},
+		Circle {
+			center: Vec2 {x: Fx32::from_q (404, scale), y: Fx32::from_q (512 - 41, scale)},
+			radius: Fx32::from_q (60, scale),
+		},
+		];
 		
-		for x in 256 - 55..256 + 55 {
+		for x in 512 - 110..512 + 110 {
 			let mut particle = Ray2 {
 				start: Vec2 {
-					x: Fx32::from_q (x, scale),
+					x: Fx32::from_q (x, scale * 2),
 					y: Fx32::from_q (0, scale)
 				},
 				dir: Vec2 {
@@ -45,7 +55,7 @@ mod tests {
 			let mut data = Data::new().move_to(((particle.start.x * scale_fx).to_i32 (), (particle.start.y * scale_fx).to_i32 ()));
 			
 			for step in 0..10 {
-				let trace_result = raytrace::ray_trace_circle (&particle, &obstacle);
+				let trace_result = obstacle.iter ().map(|obstacle: &Circle| raytrace::ray_trace_circle (&particle, obstacle)).fold ( raytrace::Ray2TraceResult::Miss, raytrace::fold_closer_result);
 				
 				match trace_result {
 					raytrace::Ray2TraceResult::Miss => {
