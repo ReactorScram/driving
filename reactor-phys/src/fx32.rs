@@ -5,39 +5,40 @@ use std::ops::Neg;
 use std::ops::Sub;
 use std::ops::Mul;
 
-// TODO: Typedef Int = i32 or something
+type Int = i32;
+type DoubleInt = i64;
 
 // Adjust this to balance between range and granularity
 // 6 --> 20.12
 // 8 --> 16.16
 // 10 --> 12.20
-pub const HALF_FRACTIONAL_BITS: i32 = 6;
+pub const HALF_FRACTIONAL_BITS: Int = 6;
 
-pub const FRACTIONAL_BITS: i32 = HALF_FRACTIONAL_BITS * 2;
-pub const ROOT_DENOMINATOR: i32 = 1 << HALF_FRACTIONAL_BITS;
-pub const DENOMINATOR: i32 = 1 << FRACTIONAL_BITS;
+pub const FRACTIONAL_BITS: Int = HALF_FRACTIONAL_BITS * 2;
+pub const ROOT_DENOMINATOR: Int = 1 << HALF_FRACTIONAL_BITS;
+pub const DENOMINATOR: Int = 1 << FRACTIONAL_BITS;
 
 #[derive (Clone, Copy, Eq, PartialEq)]
 pub struct Fx32 {
-	pub x: i32,
+	pub x: Int,
 }
 
 impl Fx32 {
-	pub fn new (x: i32) -> Fx32 {
+	pub fn new (x: Int) -> Fx32 {
 		Fx32 {
 			x: x,
 		}
 	}
 	
 	pub fn from_float (x: f32) -> Fx32 {
-		Fx32::new ((x * DENOMINATOR as f32) as i32)
+		Fx32::new ((x * DENOMINATOR as f32) as Int)
 	}
 	
-	pub fn from_q (num: i32, den: i32) -> Fx32 {
+	pub fn from_q (num: Int, den: Int) -> Fx32 {
 		Fx32::new ((num * DENOMINATOR) / den)
 	}
 	
-	pub fn from_int (x: i32) -> Fx32 {
+	pub fn from_int (x: Int) -> Fx32 {
 		Fx32::from_q (x, 1)
 	}
 	
@@ -73,8 +74,8 @@ impl Fx32 {
 	regression testing.
 	*/
 	pub fn mul_64 (self, o: Fx32) -> Fx32 {
-		let c = self.x as i64 * o.x as i64;
-		Fx32::new ((c / DENOMINATOR as i64) as i32)
+		let c = self.x as DoubleInt * o.x as DoubleInt;
+		Fx32::new ((c / DENOMINATOR as DoubleInt) as Int)
 	}
 }
 

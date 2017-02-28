@@ -1,4 +1,5 @@
 pub mod fx32;
+pub mod vec4;
 
 #[cfg(test)]
 mod tests {
