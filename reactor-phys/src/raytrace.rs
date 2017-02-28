@@ -58,12 +58,12 @@ pub fn ray_trace_circle (ray: &Ray2, circle: &Circle) -> Ray2TraceResult {
 	
 	let c = toward_circle.length_sq () - circle.radius.square_64 ();
 	
-	let determinant = Fx32::from_int (4) * (half_b.square_64 () - a * c);
-	if determinant < Fx32::from_int (0) {
+	let quarter_determinant = half_b.square_64 () - a * c;
+	if quarter_determinant < Fx32::from_int (0) {
 		return Ray2TraceResult::Miss;
 	}
 	
-	let t = (half_b * Fx32::from_int (2) - determinant.sqrt_64 ()) / (Fx32::from_int (2) * a);
+	let t = (half_b - quarter_determinant.sqrt_64 ()) / a;
 	
 	if t >= Fx32::from_int (0) && t <= Fx32::from_int (1) {
 		let ccd_pos = ray.at (t);
