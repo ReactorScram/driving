@@ -49,9 +49,7 @@ pub fn ray_trace_circle (ray: &Ray2, circle: &Circle) -> Ray2TraceResult {
 		return Ray2TraceResult::Miss;
 	}
 	
-	let b = 
-		Fx32::from_int (2) * (ray.start * ray.dir) -
-		Fx32::from_int (2) * (circle.center * ray.dir);
+	let b = (ray.dir * toward_circle) * Fx32::from_int (-2);
 	
 	let c = circle.center.length_sq () + ray.start.length_sq ()
 		- Fx32::from_int (2) * (circle.center * ray.start)
