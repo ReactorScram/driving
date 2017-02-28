@@ -6,6 +6,7 @@ use std::ops::Add;
 use std::ops::Neg;
 use std::ops::Sub;
 use std::ops::Mul;
+use std::ops::Div;
 use self::int_traits::IntTraits;
 
 type Int = i32;
@@ -81,6 +82,11 @@ impl Fx32 {
 		Fx32::new ((c / DENOMINATOR as DoubleInt) as Int)
 	}
 	
+	pub fn div_64 (self, o: Fx32) -> Fx32 {
+		let a2 = self.x as DoubleInt * DENOMINATOR as DoubleInt;
+		Fx32::new ((a2 / o.x as DoubleInt) as Int)
+	}
+	
 	pub fn square_64 (self) -> Fx32 {
 		Fx32::mul_64 (self, self)
 	}
@@ -151,6 +157,15 @@ impl Mul <Fx32> for Fx32 {
 		We can do this by dividing both a and b by root c
 		*/
 		
-		Fx32::new ((self.x / ROOT_DENOMINATOR) * (o.x / ROOT_DENOMINATOR))
+		//Fx32::new ((self.x / ROOT_DENOMINATOR) * (o.x / ROOT_DENOMINATOR))
+		Fx32::mul_64 (self, o)
+	}
+}
+
+impl Div <Fx32> for Fx32 {
+	type Output = Fx32;
+	
+	fn div (self, o: Fx32) -> Fx32 {
+		Fx32::div_64 (self, o)
 	}
 }

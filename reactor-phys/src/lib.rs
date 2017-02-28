@@ -75,9 +75,21 @@ mod tests {
 		*/
 		assert! (Fx32::mul_64 (Fx32::from_float (1.0f32 / 2048.0f32), Fx32::from_float (16384.0f32)) == Fx32::from_float (8.0f32), "mul_64");
 		
-		assert! (Fx32::mul_small (Fx32::from_float (1.0f32 / 1024.0f32), Fx32::from_float (0.5f32)) == Fx32::from_float (1.0f32 / 2048.0f32), "mul_small");
+		assert_eq! (
+			Fx32::mul_small (Fx32::from_float (1.0f32 / 1024.0f32), 
+			Fx32::from_float (0.5f32)),
+			Fx32::from_float (1.0f32 / 2048.0f32), "mul_small");
 		
-		assert! (Fx32::mul_small (Fx32::from_float (1.0f32), Fx32::from_float (1.5f32)) == Fx32::from_float (1.5f32), "mul_small");
+		assert_eq! (
+			Fx32::mul_small (Fx32::from_float (1.0f32), 
+			Fx32::from_float (1.5f32)),
+			Fx32::from_float (1.5f32), 
+			"mul_small");
+		
+		assert_eq! (
+			Fx32::from_int (512) / Fx32::from_int (8),
+			Fx32::from_int (64),
+			"div_64");
 		
 		assert! (Fx32::from_int (1).square_64 () == Fx32::from_int (1), "square");
 		assert! (Fx32::from_int (1).sqrt_64 () == Fx32::from_int (1), "square_root");
