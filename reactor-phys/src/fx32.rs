@@ -40,7 +40,7 @@ impl Fx32 {
 	}
 	
 	pub fn from_q (num: Int, den: Int) -> Fx32 {
-		Fx32::new ((num << FRACTIONAL_BITS) / den)
+		Fx32::new ((((num as DoubleInt) << FRACTIONAL_BITS) / den as DoubleInt) as Int)
 	}
 	
 	pub fn from_int (x: Int) -> Fx32 {
@@ -213,7 +213,7 @@ impl Fx32Small {
 		assert! (o.abs () < 1 << (FRACTIONAL_BITS - 2));
 		
 		Fx32 {
-			x: (o.x >> (FRACTIONAL_BITS - 2) * self.x.x) >> 2
+			x: ((o.x >> (FRACTIONAL_BITS - 2)) * self.x.x) >> 2
 		}
 	}
 }

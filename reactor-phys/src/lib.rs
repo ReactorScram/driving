@@ -216,5 +216,10 @@ mod tests {
 			Fx32::from_int (128 * 128).sqrt_64 (),
 			Fx32::from_int (128), 
 			"big sqrt");
+		
+		assert_eq! (
+			Fx32::from_int (511) * Fx32::from_q (1, 10).to_small (),
+			Fx32::from_q (3348583, 65536),
+			"Fx32 * Fx32Small");
     }
 }
