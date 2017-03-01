@@ -63,7 +63,7 @@ mod tests {
 					},
 					raytrace::Ray2TraceResult::Hit (t, ccd_pos, normal) => {
 						particle.start = ccd_pos;
-						particle.dir = particle.dir.reflect (&normal);
+						particle.dir = particle.dir.reflect (normal);
 						//particle.dir = normal;
 					},
 				};
@@ -104,7 +104,7 @@ mod tests {
 			"2D cross product");
 		
 		assert_eq! (
-			Vec2 {x: Fx32::from_int (5), y: Fx32::from_int (5)}.reflect (&Vec2 {x: Fx32::from_int (0), y: Fx32::from_int (-1)}),
+			Vec2 {x: Fx32::from_int (5), y: Fx32::from_int (5)}.reflect (Vec2 {x: Fx32::from_int (0), y: Fx32::from_int (-1)}.to_small ()),
 			Vec2 {x: Fx32::from_int (5), y: Fx32::from_int (-5)},
 			"reflect");
 	}
@@ -231,5 +231,12 @@ mod tests {
 			Fx32::from_int (16383) * Fx32::from_q (1, 1).to_small (),
 			Fx32::from_int (16383),
 			"Fx32 * Fx32Small");
+		
+		assert_eq! (
+			Fx32::from_int (-1).abs (),
+			Fx32::from_int (1),
+			"abs");
+		
+		
     }
 }

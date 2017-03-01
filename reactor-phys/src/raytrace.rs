@@ -1,11 +1,12 @@
 use circle::Circle;
 use fx32::Fx32;
+use fx32::Fx32Small;
 use ray2::Ray2;
 use vec2::Vec2;
 
 #[derive (Clone, Copy)]
 pub enum Ray2TraceResult {
-	Hit (Fx32, Vec2, Vec2),
+	Hit (Fx32, Vec2 <Fx32>, Vec2 <Fx32Small>),
 	Miss,
 }
 
@@ -35,12 +36,14 @@ pub fn fold_closer_result (a: Ray2TraceResult, b: Ray2TraceResult) -> Ray2TraceR
 pub fn ray_trace_circle_2 (ray: &Ray2, circle: &Circle) -> Ray2TraceResult {
 	let ray_length = ray.dir.length ();
 	
-	let basis_x = ray.dir / ray_length;
-	let basis_y = basis_x.cross ();
+	let basis_x_big = ray.dir / ray_length;
+	
+	let basis_x = basis_x_big.to_small ();
+	let basis_y = basis_x_big.cross ().to_small ();
 	
 	let to_circle = circle.center - ray.start;
 	
-	let center_in_ray_space = Vec2 {
+	let center_in_ray_space = Vec2::<Fx32> {
 		x: to_circle * basis_x,
 		y: to_circle * basis_y,
 	};
@@ -66,13 +69,18 @@ pub fn ray_trace_circle_2 (ray: &Ray2, circle: &Circle) -> Ray2TraceResult {
 	let t = ray_space_x / ray_length;
 	let ccd_pos = ray.start + ray.dir * t;
 	
-	Ray2TraceResult::Hit (
-		t,
-		ccd_pos,
-		(ccd_pos - circle.center) / circle.radius,
-	)
+	if t >= 0 && t <= 1 {
+		return Ray2TraceResult::Hit (
+			t,
+			ccd_pos,
+			((ccd_pos - circle.center) / circle.radius).to_small (),
+		);
+	}
+	else {
+		return Ray2TraceResult::Miss;
+	}
 }
-
+/*
 pub fn ray_trace_circle (ray: &Ray2, circle: &Circle) -> Ray2TraceResult {
 	let toward_circle = circle.center - ray.start;
 	
@@ -131,3 +139,4 @@ pub fn ray_trace_circle (ray: &Ray2, circle: &Circle) -> Ray2TraceResult {
 	
 	Ray2TraceResult::Miss
 }
+*/

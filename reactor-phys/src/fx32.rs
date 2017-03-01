@@ -207,6 +207,18 @@ pub struct Fx32Small {
 	pub x: Fx32,
 }
 
+impl From <Fx32> for Fx32Small {
+	fn from (o: Fx32) -> Fx32Small {
+		o.to_small ()
+	}
+}
+
+impl From <Fx32Small> for Fx32 {
+	fn from (o: Fx32Small) -> Fx32 {
+		o.x
+	}
+}
+
 impl Fx32Small {
 	pub fn mul_by_big (self, o: Fx32) -> Fx32 {
 		// Assert for headroom on the big number
