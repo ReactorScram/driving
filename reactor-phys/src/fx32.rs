@@ -21,7 +21,6 @@ type DoubleInt = i64;
 pub const HALF_FRACTIONAL_BITS: Int = 8;
 
 pub const FRACTIONAL_BITS: Int = HALF_FRACTIONAL_BITS * 2;
-pub const ROOT_DENOMINATOR: Int = 1 << HALF_FRACTIONAL_BITS;
 pub const DENOMINATOR: Int = 1 << FRACTIONAL_BITS;
 
 #[derive (Clone, Copy, Debug, Eq, PartialEq)]
@@ -41,7 +40,7 @@ impl Fx32 {
 	}
 	
 	pub fn from_q (num: Int, den: Int) -> Fx32 {
-		Fx32::new ((num * DENOMINATOR) / den)
+		Fx32::new ((num << FRACTIONAL_BITS) / den)
 	}
 	
 	pub fn from_int (x: Int) -> Fx32 {
@@ -53,7 +52,7 @@ impl Fx32 {
 	}
 	
 	pub fn to_i32 (&self) -> i32 {
-		self.x / DENOMINATOR
+		self.x >> FRACTIONAL_BITS
 	}
 	/*
 	pub fn to_small (self) -> Fx32Small {
@@ -73,10 +72,10 @@ impl Fx32 {
 		let b = o.x;
 		
 		if a.abs () > b.abs () {
-			Fx32::new ((a / ROOT_DENOMINATOR) * (b) / ROOT_DENOMINATOR)
+			Fx32::new ((a >> HALF_FRACTIONAL_BITS) * (b) >> HALF_FRACTIONAL_BITS)
 		}
 		else {
-			Fx32::new ((a) * (b / ROOT_DENOMINATOR) / ROOT_DENOMINATOR)
+			Fx32::new ((a) * (b >> HALF_FRACTIONAL_BITS) >> HALF_FRACTIONAL_BITS)
 		}
 	}
 	
@@ -86,7 +85,7 @@ impl Fx32 {
 		let a = self.x;
 		let b = o.x;
 		
-		Fx32::new (((a / 2) * (b / 2)) / (DENOMINATOR / 4))
+		Fx32::new (((a / 2) * (b / 2)) >> (FRACTIONAL_BITS - 2))
 	}
 	
 	pub fn mul_big (&self, o: Fx32) -> Fx32 {
@@ -102,7 +101,7 @@ impl Fx32 {
 		We can do this by dividing both a and b by root c
 		*/
 		
-		Fx32::new ((self.x / ROOT_DENOMINATOR) * (o.x / ROOT_DENOMINATOR))
+		Fx32::new ((self.x >> HALF_FRACTIONAL_BITS) * (o.x >> HALF_FRACTIONAL_BITS))
 	}
 	
 	/*
@@ -116,11 +115,11 @@ impl Fx32 {
 	*/
 	pub fn mul_64 (self, o: Fx32) -> Fx32 {
 		let c = self.x as DoubleInt * o.x as DoubleInt;
-		Fx32::new ((c / DENOMINATOR as DoubleInt) as Int)
+		Fx32::new ((c >> FRACTIONAL_BITS as DoubleInt) as Int)
 	}
 	
 	pub fn div_64 (self, o: Fx32) -> Fx32 {
-		let a2 = self.x as DoubleInt * DENOMINATOR as DoubleInt;
+		let a2 = (self.x as DoubleInt) << FRACTIONAL_BITS as DoubleInt;
 		Fx32::new ((a2 / o.x as DoubleInt) as Int)
 	}
 	
@@ -130,7 +129,7 @@ impl Fx32 {
 	
 	pub fn sqrt_64 (self) -> Fx32 {
 		Fx32 {
-			x: (self.x as DoubleInt * DENOMINATOR as DoubleInt).sqrt () as Int,
+			x: ((self.x as DoubleInt) << FRACTIONAL_BITS).sqrt () as Int,
 		}
 	}
 }
