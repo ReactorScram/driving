@@ -225,7 +225,7 @@ impl Fx32Small {
 		assert! (o.abs () < 1 << (FRACTIONAL_BITS - 2));
 		
 		Fx32 {
-			x: ((o.x >> (FRACTIONAL_BITS - 2)) * (self.x.x >> 2))
+			x: ((o.x >> (FRACTIONAL_BITS - 2)) * self.x.x) >> 2
 		}
 	}
 }
