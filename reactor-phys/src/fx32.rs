@@ -18,7 +18,7 @@ type DoubleInt = i64;
 // 6 --> 20.12
 // 8 --> 16.16
 // 10 --> 12.20
-pub const HALF_FRACTIONAL_BITS: Int = 6;
+pub const HALF_FRACTIONAL_BITS: Int = 8;
 
 pub const FRACTIONAL_BITS: Int = HALF_FRACTIONAL_BITS * 2;
 pub const ROOT_DENOMINATOR: Int = 1 << HALF_FRACTIONAL_BITS;
@@ -48,6 +48,21 @@ impl Fx32 {
 		Fx32::from_q (x, 1)
 	}
 	
+	pub fn to_f64 (&self) -> f64 {
+		self.x as f64 / DENOMINATOR as f64
+	}
+	
+	pub fn to_i32 (&self) -> i32 {
+		self.x / DENOMINATOR
+	}
+	/*
+	pub fn to_small (self) -> Fx32Small {
+		assert! (self.abs () < 2);
+		Fx32Small {
+			x: self,
+		}
+	}
+	*/
 	pub fn abs (&self) -> Fx32 {
 		Fx32::new (self.x.abs ())
 	}
@@ -117,14 +132,6 @@ impl Fx32 {
 		Fx32 {
 			x: (self.x as DoubleInt * DENOMINATOR as DoubleInt).sqrt () as Int,
 		}
-	}
-	
-	pub fn to_f64 (&self) -> f64 {
-		self.x as f64 / DENOMINATOR as f64
-	}
-	
-	pub fn to_i32 (&self) -> i32 {
-		self.x / DENOMINATOR
 	}
 }
 /*
@@ -200,3 +207,24 @@ impl PartialOrd <i32> for Fx32 {
 		self.x.partial_cmp (&Fx32::from_int (*o).x)
 	}
 }
+
+/*
+A specialized fixed-point number with the same fractional bits,
+but compile-time hints that it should fall in the range (-2.0, +2.0)
+and asserts.
+
+#[derive (Clone, Copy, Debug, Eq, PartialEq)]
+pub struct Fx32Small {
+	pub x: Fx32,
+}
+
+impl Fx32Small {
+	pub fn mul_by_big (o: Fx32) -> Fx32 {
+		
+	}
+}
+
+impl Mul <Fx32Small> for Fx32 {
+	
+}
+*/

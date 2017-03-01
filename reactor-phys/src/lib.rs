@@ -134,7 +134,7 @@ mod tests {
 		assert! (half * half == quarter, "mul");
 		assert! (Fx32::from_float (1.0f32 / 64.0f32) * Fx32::from_float (128.0f32) == Fx32::from_float (2.0f32), "mul");
 		
-		let biggest_root = 724.0f32;
+		let biggest_root = 181.0f32;
 		assert_eq! (
 			Fx32::from_float (biggest_root) * Fx32::from_float (biggest_root), 
 			Fx32::from_float (biggest_root * biggest_root), 
@@ -205,15 +205,16 @@ mod tests {
 			Fx32::from_int (3), 
 			"sqrt");
 		
-		// Biggest POT I can square with 20.12, but not the biggest int
+		// Biggest POT I can square with 20.12 is 512
+		// With 16.16 is 128
 		assert_eq! (
-			Fx32::from_int (512).square_64 (),
-			Fx32::from_int (512 * 512), 
+			Fx32::from_int (128).square_64 (),
+			Fx32::from_int (128 * 128), 
 			"big square");
 		
 		assert_eq! (
-			Fx32::from_int (512 * 512).sqrt_64 (),
-			Fx32::from_int (512), 
+			Fx32::from_int (128 * 128).sqrt_64 (),
+			Fx32::from_int (128), 
 			"big sqrt");
     }
 }
