@@ -104,7 +104,7 @@ mod tests {
 			"2D cross product");
 		
 		assert_eq! (
-			Vec2 {x: Fx32::from_int (5), y: Fx32::from_int (5)}.reflect (Vec2 {x: Fx32::from_int (0), y: Fx32::from_int (-1)}.to_small ()),
+			Vec2 {x: Fx32::from_int (5), y: Fx32::from_int (5)}.reflect (Vec2 {x: Fx32::from_int (0), y: Fx32::from_int (-1)}),
 			Vec2 {x: Fx32::from_int (5), y: Fx32::from_int (-5)},
 			"reflect");
 	}

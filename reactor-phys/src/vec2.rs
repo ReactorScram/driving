@@ -22,7 +22,7 @@ impl fmt::Debug for Vec2 {
 
 // Real: From <<Real as Div<Real2>>::Output> + Div <Real2>
 
-impl <Real: Into <Fx32> + From <Fx32> + From <Fx32Small> + Neg + Mul <Fx32> + Mul <Fx32Small> + Mul <Real> + From <<Real as Mul <Real>>::Output> + From <<Real as Div <Real>>::Output> + Div <Real> + Mul <Vec2 <Fx32Small>> + From <<Vec2 <Real> as Mul>::Output>> Vec2 <Real> where Vec2 <Real>: Mul, Fx32: From <Real>, Vec2 <Real>: Mul <Vec2 <Fx32Small>>, Fx32: From <<Vec2 <Real> as Mul <Vec2 <Fx32Small>>>::Output>, Real: Copy {
+impl <Real: Into <Fx32> + From <Fx32> + From <Fx32Small> + Neg + Mul <Fx32> + Mul <Fx32Small> + Mul <Real> + From <<Real as Mul <Real>>::Output> + From <<Real as Div <Real>>::Output> + Div <Real> + Mul <Vec2 <Fx32Small>> + From <<Vec2 <Real> as Mul>::Output>> Vec2 <Real> where Vec2 <Real>: Mul, Fx32: From <Real>, Vec2 <Real>: Mul <Vec2 <Fx32Small>>, Fx32: From <<Vec2 <Real> as Mul <Vec2 <Fx32Small>>>::Output>, Real: Copy, Vec2 <Fx32>: From <Vec2 <Real>> {
 	pub fn length_sq (self) -> Real {
 		Real::from (self * self)
 	}
@@ -52,10 +52,10 @@ impl <Real: Into <Fx32> + From <Fx32> + From <Fx32Small> + Neg + Mul <Fx32> + Mu
 	}
 	
 	// o should be normalized
-	pub fn reflect (self, o: Vec2 <Fx32Small>) -> Vec2 <Real> {
-		let projection = Fx32::from (self * o);
+	pub fn reflect (self, o: Vec2 <Fx32>) -> Vec2 <Real> {
+		let projection = Fx32::from (Vec2::<Fx32>::from (self) * o);
 		let double_proj: Fx32 = projection * Fx32::from_int (2);
-		let offset = Vec2::<Fx32>::from (o) * double_proj;
+		let offset = o.mul_64 (double_proj);
 		
 		self - Vec2::<Real> {
 			x: offset.x.into (),
@@ -67,6 +67,15 @@ impl <Real: Into <Fx32> + From <Fx32> + From <Fx32Small> + Neg + Mul <Fx32> + Mu
 		Vec2::<Fx32Small> {
 			x: self.x.into ().to_small (),
 			y: self.y.into ().to_small (),
+		}
+	}
+}
+
+impl Vec2 <Fx32> {
+	pub fn mul_64 <Real2> (self, o: Real2) -> Vec2 <Fx32> where Real2: Into <Fx32> + Copy {
+		Vec2::<Fx32> {
+			x: Fx32::from (self.x.mul_64 (o.into ())),
+			y: Fx32::from (self.y.mul_64 (o.into ())),
 		}
 	}
 }

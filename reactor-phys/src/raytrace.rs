@@ -1,12 +1,11 @@
 use circle::Circle;
 use fx32::Fx32;
-use fx32::Fx32Small;
 use ray2::Ray2;
 use vec2::Vec2;
 
 #[derive (Clone, Copy)]
 pub enum Ray2TraceResult {
-	Hit (Fx32, Vec2 <Fx32>, Vec2 <Fx32Small>),
+	Hit (Fx32, Vec2 <Fx32>, Vec2 <Fx32>),
 	Miss,
 }
 
@@ -44,7 +43,7 @@ pub fn ray_trace_circle_2 (ray: &Ray2, circle: &Circle) -> Ray2TraceResult {
 	let to_circle = circle.center - ray.start;
 	
 	let center_in_ray_space = Vec2::<Fx32> {
-		x: to_circle * basis_x,
+		x: to_circle.mul_64 (basis_x),
 		y: to_circle * basis_y,
 	};
 	
@@ -73,7 +72,7 @@ pub fn ray_trace_circle_2 (ray: &Ray2, circle: &Circle) -> Ray2TraceResult {
 		return Ray2TraceResult::Hit (
 			t,
 			ccd_pos,
-			((ccd_pos - circle.center) / circle.radius).to_small (),
+			((ccd_pos - circle.center) / circle.radius),
 		);
 	}
 	else {
