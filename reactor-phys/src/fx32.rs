@@ -54,14 +54,14 @@ impl Fx32 {
 	pub fn to_i32 (&self) -> i32 {
 		self.x >> FRACTIONAL_BITS
 	}
-	/*
+	
 	pub fn to_small (self) -> Fx32Small {
 		assert! (self.abs () < 2);
 		Fx32Small {
 			x: self,
 		}
 	}
-	*/
+	
 	pub fn abs (&self) -> Fx32 {
 		Fx32::new (self.x.abs ())
 	}
@@ -147,16 +147,7 @@ impl Add <Fx32> for Fx32 {
 		Fx32::new (self.x + o.x)
 	}
 }
-/*
-// This is stupid
-impl <'a, 'b> Add <&'a Fx32> for &'b Fx32 {
-	type Output = Fx32;
-	
-	fn add (self, o: &'a Fx32) -> Fx32 {
-		Fx32::new (self.x + o.x)
-	}
-}
-*/
+
 impl Sub <Fx32> for Fx32 {
 	type Output = Fx32;
 	
@@ -177,7 +168,7 @@ impl Mul <Fx32> for Fx32 {
 	type Output = Fx32;
 	
 	fn mul (self, o: Fx32) -> Fx32 {
-		Fx32::mul_64 (self, o)
+		Fx32::mul_big (&self, o)
 	}
 }
 
@@ -206,24 +197,39 @@ impl PartialOrd <i32> for Fx32 {
 		self.x.partial_cmp (&Fx32::from_int (*o).x)
 	}
 }
-
 /*
 A specialized fixed-point number with the same fractional bits,
 but compile-time hints that it should fall in the range (-2.0, +2.0)
 and asserts.
-
+*/
 #[derive (Clone, Copy, Debug, Eq, PartialEq)]
 pub struct Fx32Small {
 	pub x: Fx32,
 }
 
 impl Fx32Small {
-	pub fn mul_by_big (o: Fx32) -> Fx32 {
+	pub fn mul_by_big (self, o: Fx32) -> Fx32 {
+		// Assert for headroom on the big number
+		assert! (o.abs () < 1 << (FRACTIONAL_BITS - 2));
 		
+		Fx32 {
+			x: (o.x >> (FRACTIONAL_BITS - 2) * self.x.x) >> 2
+		}
 	}
 }
 
 impl Mul <Fx32Small> for Fx32 {
+	type Output = Fx32;
 	
+	fn mul (self, o: Fx32Small) -> Fx32 {
+		o.mul_by_big (self)
+	}
 }
-*/
+
+impl Mul <Fx32> for Fx32Small {
+	type Output = Fx32;
+	
+	fn mul (self, o: Fx32) -> Fx32 {
+		self.mul_by_big (o)
+	}
+}
