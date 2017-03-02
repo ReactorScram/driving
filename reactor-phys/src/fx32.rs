@@ -235,6 +235,7 @@ impl Mul <Fx32Small> for Fx32 {
 	
 	fn mul (self, o: Fx32Small) -> Fx32 {
 		o.mul_by_big (self)
+		//o.x.mul_64 (self)
 	}
 }
 
@@ -243,5 +244,6 @@ impl Mul <Fx32> for Fx32Small {
 	
 	fn mul (self, o: Fx32) -> Fx32 {
 		self.mul_by_big (o)
+		//self.x.mul_64 (o)
 	}
 }

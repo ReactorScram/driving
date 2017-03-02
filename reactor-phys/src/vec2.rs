@@ -52,10 +52,13 @@ impl <Real: Into <Fx32> + From <Fx32> + From <Fx32Small> + Neg + Mul <Fx32> + Mu
 	}
 	
 	// o should be normalized
-	pub fn reflect (self, o: Vec2 <Fx32Small>) -> Vec2 <Real> {
-		let projection = Fx32::from (self * o);
-		let double_proj: Fx32 = projection * Fx32::from_int (2);
-		let offset = Vec2::<Fx32>::from (o) * double_proj;
+	pub fn reflect (self, n: Vec2 <Fx32Small>) -> Vec2 <Real> {
+		let projection = Fx32::from (self * n);
+		let double_proj = Fx32 { x: projection.x * 2 };
+		let offset = Vec2::<Fx32> {
+			x: Fx32::from (n.x).mul_64 (double_proj),
+			y: Fx32::from (n.y).mul_64 (double_proj),
+		};
 		
 		self - Vec2::<Real> {
 			x: offset.x.into (),
@@ -118,8 +121,8 @@ impl <Real: Mul <Real2> + Into <Fx32> + From <Fx32> + From <<Real as Mul <Real2>
 	type Output = Real;
 	
 	fn mul (self, o: Vec2 <Real2>) -> Real {
-		let xx: Fx32 = (self.x * o.x).into ();
-		let yy: Fx32 = (self.y * o.y).into ();
+		let xx = Fx32::from (self.x * o.x);
+		let yy = Fx32::from (self.y * o.y);
 		
 		Real::from (xx + yy)
 	}

@@ -1,5 +1,3 @@
-extern crate svg;
-
 pub mod circle;
 pub mod fx32;
 pub mod ray2;
@@ -13,76 +11,10 @@ mod tests {
 	use super::ray2::Ray2;
 	use super::raytrace;
 	use super::vec2::Vec2;
-	use super::svg::Document;
-	use super::svg::node::element::Path;
-	use super::svg::node::element::path::Data;
 	
 	#[test]
 	fn svg () {
-		let mut document = Document::new()
-			.set("viewBox", (0, 0, 512, 512));
-		
-		let scale = 1;
-		let scale_fx = Fx32::from_int (scale);
-		
-		let obstacle = vec! [
-		Circle {
-			center: Vec2 {x: Fx32::from_q (256, scale), y: Fx32::from_q (500, scale)},
-			radius: Fx32::from_q (50, scale),
-		},
-		Circle {
-			center: Vec2 {x: Fx32::from_q (81, scale), y: Fx32::from_q (512 - 232, scale)},
-			radius: Fx32::from_q (40, scale),
-		},
-		Circle {
-			center: Vec2 {x: Fx32::from_q (404, scale), y: Fx32::from_q (512 - 41, scale)},
-			radius: Fx32::from_q (60, scale),
-		},
-		];
-		
-		for x in 512 - 110..512 + 110 {
-			let mut particle = Ray2 {
-				start: Vec2 {
-					x: Fx32::from_q (x, scale * 2),
-					y: Fx32::from_q (0, scale)
-				},
-				dir: Vec2 {
-					x: Fx32::from_q (0, scale),
-					y: Fx32::from_q (100, scale),
-				},
-			};
-			
-			let mut data = Data::new().move_to(((particle.start.x * scale_fx).to_i32 (), (particle.start.y * scale_fx).to_i32 ()));
-			
-			for step in 0..10 {
-				let trace_result = obstacle.iter ().map(|obstacle: &Circle| raytrace::ray_trace_circle_2 (&particle, obstacle)).fold ( raytrace::Ray2TraceResult::Miss, raytrace::fold_closer_result);
-				
-				match trace_result {
-					raytrace::Ray2TraceResult::Miss => {
-						particle.start = particle.start + particle.dir;
-					},
-					raytrace::Ray2TraceResult::Hit (t, ccd_pos, normal) => {
-						particle.start = ccd_pos;
-						particle.dir = particle.dir.reflect (normal);
-						//particle.dir = normal;
-					},
-				};
-				
-				data = data.line_to(((particle.start.x * scale_fx).to_i32 (), (particle.start.y * scale_fx).to_i32 ()));
-			}
-			
-			//data = data.close ();
-			
-			let path = Path::new()
-				.set("fill", "none")
-				.set("stroke", "black")
-				.set("stroke-width", 0.5)
-				.set("d", data);
-			
-			document = document.add(path);
-		}
-		
-		super::svg::save("image.svg", &document).unwrap();
+		raytrace::test_ray_trace ();
 	}
 	
 	#[test]
@@ -106,6 +38,11 @@ mod tests {
 		assert_eq! (
 			Vec2 {x: Fx32::from_int (5), y: Fx32::from_int (5)}.reflect (Vec2 {x: Fx32::from_int (0), y: Fx32::from_int (-1)}.to_small ()),
 			Vec2 {x: Fx32::from_int (5), y: Fx32::from_int (-5)},
+			"reflect");
+		
+		assert_eq! (
+			Vec2 {x: Fx32::from_int (5), y: Fx32::from_int (5)}.reflect (Vec2 {x: Fx32::from_int (-1), y: Fx32::from_int (0)}.to_small ()),
+			Vec2 {x: Fx32::from_int (-5), y: Fx32::from_int (5)},
 			"reflect");
 	}
 	
