@@ -137,6 +137,10 @@ impl Fx32 {
 			x: ((self.x as DoubleInt) << FRACTIONAL_BITS).sqrt () as Int,
 		}
 	}
+	
+	pub fn sqrt (self) -> Fx32 {
+		Fx32 { x: self.x.sqrt () << HALF_FRACTIONAL_BITS }
+	}
 }
 /*
 impl fmt::Debug for Fx32 {

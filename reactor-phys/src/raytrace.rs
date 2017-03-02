@@ -146,7 +146,7 @@ pub fn ray_trace_circle_2 (ray: &Ray2, circle: &Circle) -> Ray2TraceResult {
 		return Ray2TraceResult::Miss;
 	}
 	
-	let ray_space_x = center_in_ray_space.x - (circle.radius.square () - center_in_ray_space.y.square ()).sqrt_64 ();
+	let ray_space_x = center_in_ray_space.x - (circle.radius.square () - center_in_ray_space.y.square ()).sqrt ();
 	
 	if ray_space_x > ray_length {
 		//return Ray2TraceResult::Miss;

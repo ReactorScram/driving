@@ -29,7 +29,7 @@ impl <Real: Into <Fx32> + From <Fx32> + From <Fx32Small> + Neg + Mul <Fx32> + Mu
 	
 	pub fn length (self) -> Real {
 		let length2: Fx32 = self.length_sq ().into ();
-		Real::from (length2.sqrt_64 ())
+		Real::from (length2.sqrt ())
 	}
 	
 	pub fn normalized (self) -> Vec2 <Fx32Small> {
