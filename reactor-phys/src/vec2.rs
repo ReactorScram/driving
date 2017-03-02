@@ -56,8 +56,8 @@ impl <Real: Into <Fx32> + From <Fx32> + From <Fx32Small> + Neg + Mul <Fx32> + Mu
 		let projection = Fx32::from (self * n);
 		let double_proj = Fx32 { x: projection.x * 2 };
 		let offset = Vec2::<Fx32> {
-			x: Fx32::from (n.x).mul_64 (double_proj),
-			y: Fx32::from (n.y).mul_64 (double_proj),
+			x: n.x * double_proj,
+			y: n.y * double_proj,
 		};
 		
 		self - Vec2::<Real> {

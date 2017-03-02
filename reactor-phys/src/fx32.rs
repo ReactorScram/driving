@@ -123,6 +123,11 @@ impl Fx32 {
 		Fx32::new ((a2 / o.x as DoubleInt) as Int)
 	}
 	
+	pub fn square (self) -> Fx32 {
+		let a = self.x >> HALF_FRACTIONAL_BITS;
+		Fx32 { x: a * a }
+	}
+	
 	pub fn square_64 (self) -> Fx32 {
 		Fx32::mul_64 (self, self)
 	}
