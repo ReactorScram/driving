@@ -33,7 +33,13 @@ impl <Real: Into <Fx32> + From <Fx32> + From <Fx32Small> + Neg + Mul <Fx32> + Mu
 	}
 	
 	pub fn normalized (self) -> Vec2 <Fx32Small> {
-		let v = self / self.length ();
+		let length = self.length ();
+		let v = if Fx32::from (length) == 0 {
+			self
+		}
+		else {
+			self / length
+		};
 		Vec2::<Fx32Small> {
 			x: v.x.into ().to_small (),
 			y: v.y.into ().to_small (),

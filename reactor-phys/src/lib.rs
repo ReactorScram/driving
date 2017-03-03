@@ -120,7 +120,12 @@ mod tests {
 			"mul_small");
 		
 		assert_eq! (
-			Fx32::from_int (512) / Fx32::from_int (8),
+			Fx32::from_int (512).div_32 (Fx32::from_int (8)),
+			Fx32::from_int (64),
+			"div_32");
+		
+		assert_eq! (
+			Fx32::from_int (512).div_64 (Fx32::from_int (8)),
 			Fx32::from_int (64),
 			"div_64");
 		

@@ -118,6 +118,10 @@ impl Fx32 {
 		Fx32::new ((c >> FRACTIONAL_BITS as DoubleInt) as Int)
 	}
 	
+	pub fn div_32 (self, o: Fx32) -> Fx32 {
+		Fx32::new ((self.x / (o.x >> HALF_FRACTIONAL_BITS)) << HALF_FRACTIONAL_BITS)
+	}
+	
 	pub fn div_64 (self, o: Fx32) -> Fx32 {
 		let a2 = (self.x as DoubleInt) << FRACTIONAL_BITS as DoubleInt;
 		Fx32::new ((a2 / o.x as DoubleInt) as Int)
@@ -185,7 +189,7 @@ impl Div <Fx32> for Fx32 {
 	type Output = Fx32;
 	
 	fn div (self, o: Fx32) -> Fx32 {
-		Fx32::div_64 (self, o)
+		Fx32::div_32 (self, o)
 	}
 }
 
