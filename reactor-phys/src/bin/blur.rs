@@ -186,33 +186,19 @@ fn blur_hor (input_plane: &HdrPlane, filter: &Vec <u64>) -> HdrPlane {
 fn blur_vert (input_plane: &HdrPlane, filter: &Vec <u64>) -> HdrPlane {
 	let offset = -(filter.len () as i32 - 1) / 2;
 	let filter_sum: u64 = filter.iter ().sum ();
-	// Rust plz
-	let filter_sum = filter_sum as f64;
-	let filter_f: Vec <f64> = filter.iter ().map (|x| *x as f64 / filter_sum).collect ();
+	let filter_f: Vec <f64> = filter.iter ().map (|x| *x as f64 / filter_sum as f64).collect ();
 	
 	let sz = input_plane.size;
 	
-	let mut pixels = vec![];
-	for y in 0..sz.y {
+	let mut pixels = vec! [0.0f64; (sz.x * sz.y) as usize];
+	
+	(0..sz.y).zip (pixels.chunks_mut (sz.x as usize)).map (|(y, row_chunk)| ScanlineJob { y: y, row_chunk: row_chunk }).collect::<Vec <ScanlineJob>> ().par_iter_mut ().for_each (|job| {
 		for x in 0..sz.x {
-			let dest_index = sz.clamped_index (&PlaneCoord { 
-				x: x, 
-				y: y 
-			});
+			let offset_2 = job.y + offset;
 			
-			pixels.push (0.0f64);
-			
-			for src_y in sz.clamp_y (y + 0 + offset)..sz.clamp_y (y + filter_f.len () as i32 - 1 + offset) 
-			{
-				let src_index = sz.clamped_index (&PlaneCoord { 
-					x: x, 
-					y: src_y, 
-				});
-				
-				pixels [dest_index as usize] += filter_f [(src_y - y - offset) as usize] * input_plane.pixels [src_index as usize];
-			}
+			job.row_chunk [x as usize] = (sz.clamp_y (job.y + 0 + offset) - offset_2..sz.clamp_y (job.y + filter_f.len () as i32 + offset) - offset_2).map (|i| filter_f [i as usize] * input_plane.pixels [( sz.index (&PlaneCoord {x: x, y: i + offset_2})) as usize]).sum ();
 		}
-	}
+	});
 	
 	HdrPlane {
 		size: sz,
@@ -279,8 +265,9 @@ fn write_farbfeld <T, I> (writer: &mut T, size: &PlaneCoord, pixels: I ) where T
 }
 
 fn blur (input_plane: &HdrPlane, filter: &Vec <u64>) -> HdrPlane {
-	//blur_vert (&blur_hor (input_plane, filter), filter)
-	blur_hor (input_plane, filter)
+	blur_vert (&blur_hor (input_plane, filter), filter)
+	//blur_hor (input_plane, filter)
+	//blur_vert (input_plane, filter)
 }
 
 fn blur_n (input_plane: &HdrPlane, filter: &Vec <u64>, n: u32) -> HdrPlane {
@@ -314,11 +301,14 @@ fn main () {
 		let g = r;
 		let b = r;
 		
-		let r = r + blurry_1.pixels [i] * 512.0 / 256.0;
-		let g = g + blurry_1.pixels [i] * 256.0 / 256.0;
+		let b = b + blurry_1.pixels [i] * 256.0 / 256.0;
+		let g = g + blurry_1.pixels [i] * 128.0 / 256.0;
 		
-		let r = r + blurry_20.pixels [i] * 59.0 / 256.0;
-		let b = b + blurry_20.pixels [i] * 60.0 / 256.0;
+		let b = b + blurry_10.pixels [i] * 512.0 / 256.0;
+		let g = g + blurry_10.pixels [i] * 128.0 / 256.0;
+		
+		let r = r + blurry_20.pixels [i] * 90.0 / 256.0;
+		let b = b + blurry_20.pixels [i] * 30.0 / 256.0;
 		
 		FfPixel {
 			r: double_to_ff (r),
