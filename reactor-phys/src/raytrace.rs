@@ -41,6 +41,10 @@ pub fn fold_closer_result (a: Ray2TraceResult, b: Ray2TraceResult) -> Ray2TraceR
 	}
 }
 
+pub fn write_vec2 <T> (writer: &mut T, v: &Vec2 <Fx32>) where T: Write {
+	write! (writer, "v {} 0 {}\n", v.x.to_f64 () / 256.0, v.y.to_f64 () / 256.0).unwrap ();
+}
+
 pub fn test_ray_trace () -> Result <(), Error> {
 	let scale = 1;
 	//let scale_fx = Fx32::from_int (scale);
@@ -96,7 +100,7 @@ pub fn test_ray_trace () -> Result <(), Error> {
 			},
 		};
 		
-		try! (write! (writer, "v {} {} 0\n", particle.start.x.to_f64 (), particle.start.y.to_f64 ()));
+		write_vec2 (&mut writer, &particle.start);
 		vertex_i += 1;
 		
 		for _ in 0..4000 {
@@ -132,7 +136,7 @@ pub fn test_ray_trace () -> Result <(), Error> {
 				},
 			};
 			
-			try! (write! (writer, "v {} {} 0\n", particle.start.x.to_f64 (), particle.start.y.to_f64 ()));
+			write_vec2 (&mut writer, &particle.start);
 			vertex_i += 1;
 			
 			num_ticks += 1;
@@ -182,10 +186,84 @@ impl Basis2 {
 			y: *v * self.y,
 		}
 	}
+	
+	pub fn from_space (&self, v: &Vec2 <Fx32>) -> Vec2 <Fx32> {
+		Vec2::<Fx32> {
+			x: (v.x * self.x.x) + (v.y * self.y.x),
+			y: (v.x * self.x.y) + (v.y * self.y.y),
+		}
+	}
 }
 
 pub fn ray_trace_line (ray: &Ray2, line: &WideLine) -> Ray2TraceResult {
-	Ray2TraceResult::Miss
+	if line.start == line.end {
+		// Line has zero length and so zero collision area
+		// If we run through the math we may get a 0 / 0 result
+		// so just drop it now
+		return Ray2TraceResult::Miss;
+	}
+	
+	let ray_length = ray.dir.length ();
+	let basis = get_ray_basis (ray, ray_length);
+	
+	// Transform the line to ray space
+	let line = WideLine {
+		start: basis.to_space (&(line.start - ray.start)),
+		end: basis.to_space (&(line.end - ray.start)),
+		radius: line.radius,
+	};
+	
+	// Line will have zero y difference resulting in a divide by zero
+	if line.start.y == line.end.y {
+		return Ray2TraceResult::Miss;
+	}
+	
+	let line_tangent = line.end - line.start;
+	let line_normal = line_tangent.cross ().normalized ();
+	
+	// Flip the normal so it's towards the ray
+	// This will allow us to extrude the correct side
+	let line_normal = if line_normal.x.x < 0 {
+		line_normal
+	}
+	else {
+		-line_normal
+	};
+	
+	let extrude_vector = line.radius * Vec2::<Fx32>::from (line_normal);
+	// Extrude the line
+	let line = WideLine {
+		start: line.start + extrude_vector,
+		end: line.end + extrude_vector,
+		radius: Fx32::from_int (0),
+	};
+	
+	// Apply SAT
+	if line.start.y > 0 && line.end.y > 0 {
+		return Ray2TraceResult::Miss;
+	}
+	else if line.start.y < 0 && line.end.y < 0 {
+		return Ray2TraceResult::Miss;
+	}
+	
+	// If we get here, we know that the obstacle line crosses our ray somewhere
+	
+	// Note: Lines must not have 0 length
+	let obstacle_t = (-line.start.y) / (line.end.y - line.start.y);
+	let crossing_x = line.start.x * (Fx32::from_int (1) - obstacle_t) + line.end.x * obstacle_t;
+	
+	if crossing_x < 0 || crossing_x > ray_length {
+		return Ray2TraceResult::Miss;
+	}
+	
+	// The line segments intersect
+	let t = crossing_x / ray_length;
+	
+	return Ray2TraceResult::Hit (
+		t,
+		ray.start + ray.dir * t,
+		basis.from_space (&Vec2::<Fx32>::from (line_normal)).normalized (),
+	);
 }
 
 pub fn ray_trace_circle_2 (ray: &Ray2, circle: &Circle) -> Ray2TraceResult {
