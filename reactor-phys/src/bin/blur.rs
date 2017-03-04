@@ -159,20 +159,19 @@ fn blur_hor (input_plane: &HdrPlane, filter: &Vec <u64>) -> HdrPlane {
 	
 	let sz = input_plane.size;
 	
-	let mut pixels = Vec::new ();
-	for y in 0..sz.y {
+	let pixels = (0..sz.y).flat_map (|y| {
 		let scanline_index = y * sz.x;
 		
 		let scanline: Vec <f64> = (0..sz.x).map (|x| {
-			filter_f.iter ().zip ((sz.clamp_x (x + 0 + offset)..sz.clamp_x (x + filter_f.len () as i32)).map (|src_x| input_plane.pixels [sz.index (&PlaneCoord { x: src_x, y: y}) as usize])).map (|(f, px)| f * px).sum ()
+			filter_f.iter ().zip ((sz.clamp_x (x + 0 + offset)..sz.clamp_x (x + filter_f.len () as i32)).map (|src_x| input_plane.pixels [(scanline_index + src_x) as usize])).map (|(f, px)| f * px).sum ()
 		}).collect ();
 		
-		pixels.extend (scanline.iter ());
-	}
+		scanline
+	});
 	
 	HdrPlane {
 		size: sz,
-		pixels: pixels,
+		pixels: pixels.collect (),
 	}
 }
 
