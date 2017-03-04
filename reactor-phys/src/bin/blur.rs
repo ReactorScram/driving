@@ -159,15 +159,13 @@ fn blur_hor (input_plane: &HdrPlane, filter: &Vec <u64>) -> HdrPlane {
 	
 	let sz = input_plane.size;
 	
-	let mut pixels = vec![];
+	let mut pixels = vec![0.0; (sz.x * sz.y) as usize];
 	for y in 0..sz.y {
 		for x in 0..sz.x {
 			let dest_index = sz.clamped_index (&PlaneCoord { 
 				x: x, 
 				y: y 
 			});
-			
-			pixels.push (0.0f64);
 			
 			for src_x in sz.clamp_x (x + 0 + offset)..sz.clamp_x (x + filter_f.len () as i32 - 1 + offset) 
 			{
@@ -308,24 +306,27 @@ fn main () {
 	let filter = pascal (41);
 	
 	let input_plane = read_farbfeld_grey (&mut reader);
-	let blurry_10 = blur_n (&input_plane, &filter, 10);
+	let blurry_1 = blur_n (&input_plane, &filter, 1);
+	let blurry_10 = blur_n (&blurry_1, &filter, 9);
 	let blurry_20 = blur_n (&blurry_10, &filter, 10);
 	
-	let sum = [&input_plane, &blurry_20].iter ().fold (
-	HdrPlane::new (input_plane.size), 
-	|accum, b| {
-		assert_eq!(accum.size, b.size);
-		HdrPlane {
-			size: accum.size,
-			pixels: accum.pixels.iter ().zip (b.pixels.iter ()).map (|(a, b)| a + b).collect (),
+	let sum_iter = (0..(input_plane.size.x * input_plane.size.y) as usize).map (|i| {
+		let r = input_plane.pixels [i];
+		let g = r;
+		let b = r;
+		
+		let r = r + blurry_1.pixels [i] * 512.0 / 256.0;
+		let g = g + blurry_1.pixels [i] * 256.0 / 256.0;
+		
+		let r = r + blurry_20.pixels [i] * 59.0 / 256.0;
+		let b = b + blurry_20.pixels [i] * 60.0 / 256.0;
+		
+		FfPixel {
+			r: double_to_ff (r),
+			g: double_to_ff (g),
+			b: double_to_ff (b),
+			a: 65535,
 		}
-	});
-	
-	let sum_iter = (0..(input_plane.size.x * input_plane.size.y) as usize).map (|i| FfPixel {
-		r: double_to_ff (input_plane.pixels [i]),
-		g: double_to_ff (blurry_10.pixels [i]),
-		b: double_to_ff (blurry_20.pixels [i]),
-		a: 65535,
 	});
 	
 	// Write
