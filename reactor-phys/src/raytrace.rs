@@ -12,6 +12,12 @@ use self::svg::Document;
 use self::svg::node::element::Path;
 use self::svg::node::element::path::Data;
 
+use std::io;
+use std::io::Error;
+use std::io::prelude::*;
+use std::io::BufWriter;
+use std::fs::File;
+
 #[derive (Clone, Copy)]
 pub enum Ray2TraceResult {
 	Hit (Fx32, Vec2 <Fx32>, Vec2 <Fx32Small>),
@@ -41,7 +47,7 @@ pub fn fold_closer_result (a: Ray2TraceResult, b: Ray2TraceResult) -> Ray2TraceR
 	}
 }
 
-pub fn test_ray_trace () {
+pub fn test_ray_trace () -> Result <(), Error> {
 	let mut document = Document::new()
 			.set("viewBox", (0, 0, 512, 512));
 		
@@ -75,6 +81,19 @@ pub fn test_ray_trace () {
 			y: Fx32::from_q (2, 1),
 		};
 		
+		let mut obj_file = try!(File::create("lines.obj"));
+		let mut writer = BufWriter::new (obj_file);
+		/*
+		try! (write! (writer, "v {} {}\n", 1, 2));
+		try! (write! (writer, "v {} {}\n", 2, 2));
+		try! (write! (writer, "f {} {}\n", 1, 2));
+		*/
+		
+		let mut vertex_i = 1;
+		let mut polyline_start = vertex_i;
+		
+		
+		
 		for x in 0..256 {
 			let x = x * 2;
 			let mut particle = Ray2 {
@@ -88,7 +107,10 @@ pub fn test_ray_trace () {
 				},
 			};
 			
-			let mut data = Data::new().move_to(((particle.start.x).to_f64 (), (particle.start.y).to_f64 ()));
+			try! (write! (writer, "v {} {} 0\n", particle.start.x.to_f64 (), particle.start.y.to_f64 ()));
+			vertex_i += 1;
+			
+			//let mut data = Data::new().move_to(((particle.start.x).to_f64 (), (particle.start.y).to_f64 ()));
 			
 			for step in 0..4000 {
 				let trace_result = obstacle.iter ().map(|obstacle: &Circle| ray_trace_circle_2 (&particle, obstacle)).fold ( Ray2TraceResult::Miss, fold_closer_result);
@@ -111,13 +133,16 @@ pub fn test_ray_trace () {
 					},
 					Ray2TraceResult::Hit (t, ccd_pos, normal) => {
 						particle.start = ccd_pos;
-						particle.dir = particle.dir.reflect (normal);// * Fx32::from_q (3, 4);
+						particle.dir = particle.dir.reflect (normal) * Fx32::from_q (1023, 1024);
 						//particle.dir = normal;
 						num_bounces += 1;
 					},
 				};
 				
-				data = data.line_to((particle.start.x.to_f64 (), particle.start.y.to_f64 ()));
+				//data = data.line_to((particle.start.x.to_f64 (), particle.start.y.to_f64 ()));
+				
+				try! (write! (writer, "v {} {} 0\n", particle.start.x.to_f64 (), particle.start.y.to_f64 ()));
+				vertex_i += 1;
 				
 				num_ticks += 1;
 				
@@ -125,22 +150,27 @@ pub fn test_ray_trace () {
 					break;
 				}
 			}
-			
-			//data = data.close ();
-			
+			/*
 			let path = Path::new()
 				.set("fill", "none")
 				.set("stroke", "black")
 				.set("stroke-width", 0.5)
 				.set("d", data);
+			*/
+			//document = document.add(path);
 			
-			document = document.add(path);
+			for i in polyline_start..vertex_i - 1 {
+				try! (write! (writer, "f {} {}\n", i, i + 1));
+			}
+			polyline_start = vertex_i
 		}
 		
 		println! ("num_bounces: {}", num_bounces);
 		println! ("num_ticks: {}", num_ticks);
 		
-		svg::save("image.svg", &document).unwrap();
+		//svg::save("image.svg", &document).unwrap();
+		
+		Ok (())
 }
 
 pub fn ray_trace_circle_2 (ray: &Ray2, circle: &Circle) -> Ray2TraceResult {
