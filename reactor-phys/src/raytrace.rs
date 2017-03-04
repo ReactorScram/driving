@@ -159,6 +159,8 @@ pub struct Basis2 {
 	pub y: Vec2 <Fx32Small>,
 }
 
+// Constructs a basis to ray space
+// Such that the ray is the X axis
 pub fn get_ray_basis (ray: &Ray2, ray_length: Fx32) -> Basis2 {
 	let basis_x_big = if ray_length == 0 {
 		ray.dir
@@ -173,6 +175,15 @@ pub fn get_ray_basis (ray: &Ray2, ray_length: Fx32) -> Basis2 {
 	}
 }
 
+impl Basis2 {
+	pub fn to_space (&self, v: &Vec2 <Fx32>) -> Vec2 <Fx32> {
+		Vec2::<Fx32> {
+			x: *v * self.x,
+			y: *v * self.y,
+		}
+	}
+}
+
 pub fn ray_trace_line (ray: &Ray2, line: &WideLine) -> Ray2TraceResult {
 	Ray2TraceResult::Miss
 }
@@ -181,12 +192,7 @@ pub fn ray_trace_circle_2 (ray: &Ray2, circle: &Circle) -> Ray2TraceResult {
 	let ray_length = ray.dir.length ();
 	let basis = get_ray_basis (ray, ray_length);
 	
-	let to_circle = circle.center - ray.start;
-	
-	let center_in_ray_space = Vec2::<Fx32> {
-		x: to_circle * basis.x,
-		y: to_circle * basis.y,
-	};
+	let center_in_ray_space = basis.to_space (&(circle.center - ray.start));
 	
 	if center_in_ray_space.x < 0 {
 		return Ray2TraceResult::Miss;
