@@ -3,6 +3,7 @@ pub mod fx32;
 pub mod ray2;
 pub mod raytrace;
 pub mod vec2;
+pub mod wide_line;
 
 #[cfg(test)]
 mod tests {
