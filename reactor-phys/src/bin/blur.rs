@@ -159,19 +159,37 @@ fn blur_hor (input_plane: &HdrPlane, filter: &Vec <u64>) -> HdrPlane {
 	
 	let sz = input_plane.size;
 	
-	let pixels = (0..sz.y).flat_map (|y| {
+	/*
+	let v = &mut [0, 0, 0, 0, 0];
+	let mut count = 1;
+
+	for chunk in v.chunks_mut(2) {
+		for elem in chunk.iter_mut() {
+			*elem += count;
+		}
+		count += 1;
+	}
+	assert_eq!(v, &[1, 1, 2, 2, 3]);
+	*/
+	
+	let mut pixels = vec! [0.0f64; (sz.x * sz.y) as usize];
+	let mut y = 0;
+	
+	for row_chunk in pixels.chunks_mut (sz.x as usize) {
 		let scanline_index = y * sz.x;
 		
-		let scanline: Vec <f64> = (0..sz.x).map (|x| {
-			filter_f.iter ().zip ((sz.clamp_x (x + 0 + offset)..sz.clamp_x (x + filter_f.len () as i32)).map (|src_x| input_plane.pixels [(scanline_index + src_x) as usize])).map (|(f, px)| f * px).sum ()
-		}).collect ();
+		for x in 0..sz.x {
+			row_chunk [x as usize] = filter_f.iter ().zip ((sz.clamp_x (x + 0 + offset)..sz.clamp_x (x + filter_f.len () as i32)).map (|src_x| input_plane.pixels [(scanline_index + src_x) as usize])).map (|(f, px)| f * px).sum ();
+		}
 		
-		scanline
-	});
+		y += 1;
+	}
+	
+	let pixels = pixels;
 	
 	HdrPlane {
 		size: sz,
-		pixels: pixels.collect (),
+		pixels: pixels,
 	}
 }
 
