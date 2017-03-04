@@ -6,6 +6,7 @@ authors = ["Anonymous <_>"]
 [dependencies]
 
 byteorder = "1"
+rayon = "0.6"
 
 [dependencies.int_traits]
 git = "https://github.com/tiehuis/int_traits"
