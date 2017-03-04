@@ -112,53 +112,12 @@ fn write_pixel <T> (writer: &mut T, pix: &FfPixel) where T: WriteBytesExt {
 	writer.write_u16::<BigEndian> (pix.a).unwrap ();
 }
 
-fn pascal (n: u32) -> Vec <u64> {
-	match n {
-		0 => {
-			vec! []
-		}
-		1 => {
-			vec! [1]
-		},
-		2 => {
-			vec! [1, 1]
-		},
-		3 => {
-			vec! [1, 2, 1]
-		},
-		4 => {
-			vec! [1, 3, 3, 1]
-		}
-		5 => {
-			vec! [1, 4, 6, 4, 1]
-		},
-		_ => {
-			let step = 5;
-			let prev_row = pascal (n - step + 1);
-			let step_row = pascal (step);
-			
-			let mut output = vec! [];
-			for _ in 0..n {
-				output.push (0);
-			}
-			
-			for a in 0..prev_row.len () {
-				for b in 0..step_row.len () {
-					output [a + b] += prev_row [a] * step_row [b];
-				}
-			}
-			
-			output
-		}
-	}
-}
-
-fn gaussian_filter (std_dev: i32) -> Vec <f64> {
-	let scale = (2.0 * 3.14159265358979f64).sqrt () * std_dev as f64;
-	let radius = 3 * std_dev;
-	let pow_scale = (2 * std_dev * std_dev) as f64;
+fn gaussian_filter (std_dev: f64) -> Vec <f64> {
+	let scale = (2.0 * 3.14159265358979f64).sqrt () * std_dev;
+	let radius = 3.0 * std_dev;
+	let pow_scale = 2.0 * std_dev * std_dev;
 	
-	(-radius..radius).map (|x| {
+	(-radius.ceil () as i32..(radius.ceil () + 1.0) as i32).map (|x| {
 		let x = x as f64;
 		((-x * x) / pow_scale).exp () / scale
 	}).collect ()
@@ -171,11 +130,6 @@ struct ScanlineJob <'a> {
 
 fn get_filter_offset (filter_len: i32) -> i32 {
 	-(filter_len - 1) / 2
-}
-
-fn to_filter (filter_int: &[u64]) -> Vec <f64> {
-	let sum: u64 = filter_int.iter ().sum ();
-	filter_int.iter ().map (|i| *i as f64 / sum as f64).collect ()
 }
 
 fn blur_hor (input_plane: &HdrPlane, filter: &[f64]) -> HdrPlane {
@@ -281,22 +235,7 @@ fn blur (input_plane: &HdrPlane, filter: &[f64]) -> HdrPlane {
 	//blur_hor (input_plane, filter)
 	//blur_vert (input_plane, filter)
 }
-/*
-fn blur_n (input_plane: &HdrPlane, filter: &Vec <u64>, n: u32) -> HdrPlane {
-	match n {
-		0 => {
-			// I know this is dumb
-			panic! ("Can't blur an image 0 times")
-		},
-		1 => {
-			blur (input_plane, filter)
-		},
-		_ => {
-			blur (&blur_n (input_plane, filter, n - 1), filter)
-		},
-	}
-}
-*/
+
 fn double_to_ff (val: f64) -> u16 {
 	let max = 1.0;
 	(val.min (max) * 65535.0 / max) as u16
@@ -314,8 +253,10 @@ fn alpha_blend (rgb_src: &[f64;3], rgb_dest: &[f64;3], alpha_src: f64) -> [f64;3
 {
 	let mut rgb = [0.0, 0.0, 0.0];
 	
+	let alpha_dest = 1.0 - alpha_src;
+	
 	for i in 0..3 {
-		let x = rgb_src [i] * alpha_src + rgb_dest [i] * (1.0 - alpha_src);
+		let x = rgb_src [i] * alpha_src + rgb_dest [i] * alpha_dest;
 		rgb [i] = x;
 	}
 	
@@ -328,38 +269,18 @@ fn main () {
 	
 	let input_plane = read_farbfeld_grey (&mut reader);
 	
-	let blurry_1 = blur (&input_plane, &gaussian_filter (1));
-	let blurry_20 = blur (&input_plane, &gaussian_filter (5));
-	let blurry_40 = blur (&input_plane, &gaussian_filter (40));
+	let blurry_1 = blur (&input_plane, &gaussian_filter (0.5));
+	let blurry_20 = blur (&input_plane, &gaussian_filter (5.0));
+	let blurry_40 = blur (&input_plane, &gaussian_filter (40.0));
 	
 	let sum_iter = (0..(input_plane.size.x * input_plane.size.y) as usize).map (|i| {
 		let rgb = to_linear (&[7.0 / 256.0, 1.0 / 256.0, 21.0 / 256.0]);
 		
-		let rgb = alpha_blend (&to_linear (&[210.0 / 256.0, 0.0 / 256.0, 156.0 / 256.0]), &rgb, blurry_40.pixels [i]);
+		let rgb = alpha_blend (&to_linear (&[210.0 / 200.0, 0.0 / 200.0, 156.0 / 200.0]), &rgb, blurry_40.pixels [i]);
 		
-		let rgb = alpha_blend (&to_linear (&[71.0 / 256.0, 203.0 / 256.0, 256.0 / 256.0]), &rgb, blurry_20.pixels [i]);
+		let rgb = alpha_blend (&to_linear (&[71.0 / 200.0, 203.0 / 200.0, 256.0 / 200.0]), &rgb, blurry_20.pixels [i]);
 		
 		let rgb = alpha_blend (&[1.0, 1.0, 1.0], &rgb, blurry_1.pixels [i]);
-		
-		let rgb = alpha_blend (&[1.0, 1.0, 1.0], &rgb, input_plane.pixels [i]);
-		
-		/*
-		let r = input_plane.pixels [i];
-		let g = r;
-		let b = r;
-		
-		let r = r + blurry_1.pixels [i] * (71.0f64 / 256.0).powi (2);
-		let g = g + blurry_1.pixels [i] * (203.0f64 / 256.0).powi (2);
-		let b = b + blurry_1.pixels [i] * (256.0f64 / 256.0).powi (2);
-		
-		
-		//let b = b + blurry_10.pixels [i] * 256.0 / 256.0;
-		//let g = g + blurry_10.pixels [i] * 128.0 / 256.0;
-		
-		let r = r + blurry_20.pixels [i] * (210.0f64 / 256.0).powi (2);
-		let g = g + blurry_20.pixels [i] * (0.0f64 / 256.0).powi (2);
-		let b = b + blurry_20.pixels [i] * (156.0f64 / 256.0).powi (2);
-		*/
 		
 		let rgb = to_gamma (&rgb);
 		
@@ -378,5 +299,7 @@ fn main () {
 		write_farbfeld (&mut writer, &input_plane.size, sum_iter);
 	}
 	
-	writeln!(&mut io::stderr(), "filter {:?}", gaussian_filter (5)).expect("failed printing to stderr");
+	let test_filter = gaussian_filter (1.0);
+	
+	writeln!(&mut io::stderr(), "filter {:?}, {:?}", test_filter, get_filter_offset (test_filter.len () as i32)).expect("failed printing to stderr");
 }
