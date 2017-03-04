@@ -166,7 +166,7 @@ fn blur_hor (input_plane: &HdrPlane, filter: &Vec <u64>) -> HdrPlane {
 				x: x, 
 				y: y 
 			});
-			
+			/*
 			for src_x in sz.clamp_x (x + 0 + offset)..sz.clamp_x (x + filter_f.len () as i32 - 1 + offset) 
 			{
 				let src_index = sz.clamped_index (&PlaneCoord { 
@@ -176,6 +176,8 @@ fn blur_hor (input_plane: &HdrPlane, filter: &Vec <u64>) -> HdrPlane {
 				
 				pixels [dest_index as usize] += filter_f [(src_x - x - offset) as usize] * input_plane.pixels [src_index as usize];
 			}
+			*/
+			pixels [dest_index as usize] = filter_f.iter ().zip ((sz.clamp_x (x + 0 + offset)..sz.clamp_x (x + filter_f.len () as i32)).map (|src_x| input_plane.pixels [sz.index (&PlaneCoord { x: src_x, y: y}) as usize])).map (|(f, px)| f * px).sum ();
 		}
 	}
 	
