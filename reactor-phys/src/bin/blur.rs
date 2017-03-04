@@ -159,26 +159,15 @@ fn blur_hor (input_plane: &HdrPlane, filter: &Vec <u64>) -> HdrPlane {
 	
 	let sz = input_plane.size;
 	
-	let mut pixels = vec![0.0; (sz.x * sz.y) as usize];
+	let mut pixels = Vec::new ();
 	for y in 0..sz.y {
-		for x in 0..sz.x {
-			let dest_index = sz.clamped_index (&PlaneCoord { 
-				x: x, 
-				y: y 
-			});
-			/*
-			for src_x in sz.clamp_x (x + 0 + offset)..sz.clamp_x (x + filter_f.len () as i32 - 1 + offset) 
-			{
-				let src_index = sz.clamped_index (&PlaneCoord { 
-					x: src_x, 
-					y: y 
-				});
-				
-				pixels [dest_index as usize] += filter_f [(src_x - x - offset) as usize] * input_plane.pixels [src_index as usize];
-			}
-			*/
-			pixels [dest_index as usize] = filter_f.iter ().zip ((sz.clamp_x (x + 0 + offset)..sz.clamp_x (x + filter_f.len () as i32)).map (|src_x| input_plane.pixels [sz.index (&PlaneCoord { x: src_x, y: y}) as usize])).map (|(f, px)| f * px).sum ();
-		}
+		let scanline_index = y * sz.x;
+		
+		let scanline: Vec <f64> = (0..sz.x).map (|x| {
+			filter_f.iter ().zip ((sz.clamp_x (x + 0 + offset)..sz.clamp_x (x + filter_f.len () as i32)).map (|src_x| input_plane.pixels [sz.index (&PlaneCoord { x: src_x, y: y}) as usize])).map (|(f, px)| f * px).sum ()
+		}).collect ();
+		
+		pixels.extend (scanline.iter ());
 	}
 	
 	HdrPlane {
