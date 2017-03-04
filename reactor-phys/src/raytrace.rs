@@ -64,6 +64,7 @@ pub fn test_ray_trace () -> Result <(), Error> {
 	WideLine {
 		start: obstacle [0].center,
 		end: obstacle [1].center,
+		radius: Fx32::from_q (20, scale),
 	},
 	];
 	
@@ -81,8 +82,6 @@ pub fn test_ray_trace () -> Result <(), Error> {
 	
 	let mut vertex_i = 1;
 	let mut polyline_start = vertex_i;
-	
-	
 	
 	for x in 0..256 {
 		let x = x * 2;
@@ -102,9 +101,11 @@ pub fn test_ray_trace () -> Result <(), Error> {
 		
 		for _ in 0..4000 {
 			let trace_result = {
-				let point_results = obstacle.iter ().map(|obstacle: &Circle| ray_trace_circle_2 (&particle, obstacle));
+				let point_results = obstacle.iter ().map (|obstacle| ray_trace_circle_2 (&particle, obstacle));
 				
-				point_results.fold ( Ray2TraceResult::Miss, fold_closer_result)
+				let line_results = lines.iter ().map (|line| ray_trace_line (&particle, line)); 
+				
+				point_results.chain (line_results).fold ( Ray2TraceResult::Miss, fold_closer_result)
 			};
 			
 			let dt = Fx32::from_q (1, inv_dt).to_small ();
@@ -153,9 +154,12 @@ pub fn test_ray_trace () -> Result <(), Error> {
 	Ok (())
 }
 
-pub fn ray_trace_circle_2 (ray: &Ray2, circle: &Circle) -> Ray2TraceResult {
-	let ray_length = ray.dir.length ();
-	
+pub struct Basis2 {
+	pub x: Vec2 <Fx32Small>,
+	pub y: Vec2 <Fx32Small>,
+}
+
+pub fn get_ray_basis (ray: &Ray2, ray_length: Fx32) -> Basis2 {
 	let basis_x_big = if ray_length == 0 {
 		ray.dir
 	}
@@ -163,14 +167,25 @@ pub fn ray_trace_circle_2 (ray: &Ray2, circle: &Circle) -> Ray2TraceResult {
 		ray.dir / ray_length
 	};
 	
-	let basis_x = basis_x_big.to_small ();
-	let basis_y = basis_x_big.cross ().to_small ();
+	Basis2 {
+		x: basis_x_big.to_small (),
+		y: basis_x_big.cross ().to_small (),
+	}
+}
+
+pub fn ray_trace_line (ray: &Ray2, line: &WideLine) -> Ray2TraceResult {
+	Ray2TraceResult::Miss
+}
+
+pub fn ray_trace_circle_2 (ray: &Ray2, circle: &Circle) -> Ray2TraceResult {
+	let ray_length = ray.dir.length ();
+	let basis = get_ray_basis (ray, ray_length);
 	
 	let to_circle = circle.center - ray.start;
 	
 	let center_in_ray_space = Vec2::<Fx32> {
-		x: to_circle * basis_x,
-		y: to_circle * basis_y,
+		x: to_circle * basis.x,
+		y: to_circle * basis.y,
 	};
 	
 	if center_in_ray_space.x < 0 {
