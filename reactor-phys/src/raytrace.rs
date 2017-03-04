@@ -101,7 +101,11 @@ pub fn test_ray_trace () -> Result <(), Error> {
 		vertex_i += 1;
 		
 		for _ in 0..4000 {
-			let trace_result = obstacle.iter ().map(|obstacle: &Circle| ray_trace_circle_2 (&particle, obstacle)).fold ( Ray2TraceResult::Miss, fold_closer_result);
+			let trace_result = {
+				let point_results = obstacle.iter ().map(|obstacle: &Circle| ray_trace_circle_2 (&particle, obstacle));
+				
+				point_results.fold ( Ray2TraceResult::Miss, fold_closer_result)
+			};
 			
 			let dt = Fx32::from_q (1, inv_dt).to_small ();
 			
