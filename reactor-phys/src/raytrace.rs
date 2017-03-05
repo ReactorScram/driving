@@ -129,7 +129,7 @@ pub fn test_ray_trace (filename: &str, offset: Fx32) -> Result <(), Error> {
 			let trace_result = {
 				let point_results = obstacle.iter ().map (|obstacle| ray_trace_circle_2 (&apply_dt (&particle, dt), obstacle));
 				
-				let line_results = lines.iter ().map (|line| ray_trace_line (&apply_dt (&particle, dt), line)); 
+				let line_results = lines.iter ().map (|line| ray_trace_line_2 (&apply_dt (&particle, dt), line)); 
 				
 				point_results.chain (line_results).fold ( Ray2TraceResult::Miss, fold_closer_result)
 			};
@@ -152,9 +152,9 @@ pub fn test_ray_trace (filename: &str, offset: Fx32) -> Result <(), Error> {
 				Ray2TraceResult::Pop (ccd_pos, normal) => {
 					println! ("{}: Pop from {:?} to {:?}", tick, particle.start, ccd_pos);
 					
-					let reflected_dir = particle.dir.reflect (normal);
+					let reflected_dir = particle.dir.reflect_res (normal, Fx32::from_q (0, 1024).to_small ());
 					
-					let new_dir = reflected_dir + gravity * dt;
+					let new_dir = reflected_dir;// + gravity * dt;
 					/*
 					let sum_dir = reflected_dir + new_dir;
 					let average_dir = Vec2::<Fx32> {
@@ -163,7 +163,9 @@ pub fn test_ray_trace (filename: &str, offset: Fx32) -> Result <(), Error> {
 					};
 					*/
 					particle.start = ccd_pos;// + (average_dir * dt);
-					particle.dir = new_dir;
+					if particle.dir * normal < 0 {
+						particle.dir = new_dir;
+					}
 					
 					num_pops += 1;
 				},
@@ -174,7 +176,7 @@ pub fn test_ray_trace (filename: &str, offset: Fx32) -> Result <(), Error> {
 					
 					particle.start = ccd_pos;
 					if particle.dir * normal < 0 {
-						particle.dir = particle.dir.reflect (normal) * Fx32::from_q (768, 1024);
+						particle.dir = particle.dir.reflect_res (normal, Fx32::from_q (0, 1024).to_small ());
 					}
 					
 					println! ("Outgoing vel {:?}", particle.dir);
@@ -242,6 +244,71 @@ impl Basis2 {
 			y: (v.x * self.x.y) + (v.y * self.y.y),
 		}
 	}
+}
+
+pub fn ray_trace_line_2 (ray: &Ray2, line: &WideLine) -> Ray2TraceResult {
+	let line_tangent: Vec2 <Fx32> = line.end - line.start;
+	let huge_normal = line_tangent.cross ();
+	let line_tangent = Vec2::<Fx32> {
+		x: line_tangent.x * Fx32::from_q (1, 256),
+		y: line_tangent.y * Fx32::from_q (1, 256),
+	}.normalized ();
+	let line_normal = Vec2::<Fx32Small> {
+		x: (-Fx32::from (line_tangent.y)).to_small (),
+		y: line_tangent.x,
+	};
+	
+	let ray_end = ray.start + ray.dir;
+	
+	// TODO: Probably a way to optimize this into a series of inequalities
+	let line_length = (line.end - line.start) * line_tangent;
+	
+	let start_along = (ray.start - line.start) * line_tangent;
+	let end_along = (ray_end - line.start) * line_tangent;
+	
+	if start_along < 0 && end_along < 0 {
+		return Ray2TraceResult::Miss;
+	}
+	if start_along > line_length && end_along > line_length {
+		return Ray2TraceResult::Miss;
+	}
+	
+	let sdf: Fx32 = (ray.start - line.start) * line_normal;
+	
+	// Flip the normal so it's towards the ray
+	// This will allow us to extrude the correct side
+	let line_normal = if sdf > 0 {
+		line_normal
+	}
+	else {
+		-line_normal
+	};
+	let big_normal: Vec2 <Fx32> = line_normal.into ();
+	
+	if ray.dir * big_normal > 0 {
+		// Ray is leaving the half-plane, leave it be
+		return Ray2TraceResult::Miss;
+	}
+	
+	let start_distance = sdf.abs () - line.radius;
+	let end_distance = (ray_end - line.start) * big_normal - line.radius;
+	
+	if start_distance < 0 {
+		// Ray was already inside the plane, pop it out
+		return Ray2TraceResult::Pop (
+			ray.start + big_normal * (line.radius - sdf.abs ()),
+			line_normal
+		);
+	}
+	
+	if end_distance > 0 {
+		// Ray will not reach the plane in this timestep, leave it be
+		return Ray2TraceResult::Miss;
+	}
+	
+	let t = (-start_distance) / (end_distance - start_distance);
+	let ccd_pos = ray.start + ray.dir * t;
+	return Ray2TraceResult::Hit (t, ccd_pos, line_normal);
 }
 
 pub fn ray_trace_line (ray: &Ray2, line: &WideLine) -> Ray2TraceResult {
