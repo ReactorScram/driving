@@ -92,6 +92,7 @@ pub fn test_ray_trace (filename: &str, offset: Fx32) -> Result <(), Error> {
 	];
 	
 	let mut num_bounces = 0;
+	let mut num_pops = 0;
 	let mut num_ticks = 0;
 	
 	let inv_dt = 1;
@@ -106,7 +107,7 @@ pub fn test_ray_trace (filename: &str, offset: Fx32) -> Result <(), Error> {
 	let mut vertex_i = 1;
 	let mut polyline_start = vertex_i;
 	
-	for x in 0..32 {
+	for x in 29..32 {
 		let x = x * 16;
 		let mut particle = Ray2 {
 			start: Vec2 {
@@ -138,12 +139,13 @@ pub fn test_ray_trace (filename: &str, offset: Fx32) -> Result <(), Error> {
 					//let air_drag = Fx32 { x: particle.dir.length_sq ().x / -16384 };
 					//let air_force = particle.dir * air_drag;
 					let new_dir = particle.dir + gravity * dt;// + Vec2::<Fx32>::from (air_force * dt);
+					/*
 					let sum_dir = particle.dir + new_dir;
 					let average_dir = Vec2::<Fx32> {
 						x: Fx32 { x: sum_dir.x.x / 2 },
 						y: Fx32 { x: sum_dir.y.x / 2 },
 					};
-					
+					*/
 					particle.start = particle.start + (particle.dir * dt);
 					particle.dir = new_dir;
 				},
@@ -153,14 +155,17 @@ pub fn test_ray_trace (filename: &str, offset: Fx32) -> Result <(), Error> {
 					let reflected_dir = particle.dir.reflect (normal);
 					
 					let new_dir = reflected_dir + gravity * dt;
+					/*
 					let sum_dir = reflected_dir + new_dir;
 					let average_dir = Vec2::<Fx32> {
 						x: Fx32 { x: sum_dir.x.x / 2 },
 						y: Fx32 { x: sum_dir.y.x / 2 },
 					};
-					
+					*/
 					particle.start = ccd_pos;// + (average_dir * dt);
 					particle.dir = new_dir;
+					
+					num_pops += 1;
 				},
 				Ray2TraceResult::Hit (_, ccd_pos, normal) => {
 					println! ("{}: Hit from {:?} to {:?}", tick, particle.start, ccd_pos);
@@ -189,6 +194,7 @@ pub fn test_ray_trace (filename: &str, offset: Fx32) -> Result <(), Error> {
 	}
 	
 	println! ("num_bounces: {}", num_bounces);
+	println! ("num_pops: {}", num_pops);
 	println! ("num_ticks: {}", num_ticks);
 	
 	Ok (())
@@ -237,7 +243,10 @@ pub fn ray_trace_line (ray: &Ray2, line: &WideLine) -> Ray2TraceResult {
 	// so just drop it now
 	assert! (line.start != line.end);
 	
-	let margin = Fx32::from_q (0, 256);
+	let ray_length_sq = ray.dir.length_sq ();
+	let ray_length = ray_length_sq.sqrt ();
+	
+	let margin = Fx32::from_q (128, 256);
 	
 	let line_tangent: Vec2 <Fx32> = line.end - line.start;
 	let line_tangent = Vec2::<Fx32> {
@@ -260,8 +269,12 @@ pub fn ray_trace_line (ray: &Ray2, line: &WideLine) -> Ray2TraceResult {
 	let big_normal: Vec2 <Fx32> = line_normal.into ();
 	
 	let along = (ray.start - line.start) * line_tangent;
+	let within_bounds = along > 0 && along < (line.end - line.start) * line_tangent;
 	
-	if sdf.abs () <= line.radius && along > 0 && along < (line.end - line.start) * line_tangent {
+	let starts_inside = sdf.abs () <= line.radius;
+	let ends_inside = (ray.start + ray.dir - line.start) * line_normal <= line.radius;
+	
+	if (starts_inside || (ends_inside && ray_length == 0)) && within_bounds {
 		// Ray has already started inside and we should push it out
 		let towards = -Fx32::from (ray.dir * line_normal);
 		
@@ -285,10 +298,10 @@ pub fn ray_trace_line (ray: &Ray2, line: &WideLine) -> Ray2TraceResult {
 		radius: Fx32::from_int (0),
 	};
 	
-	let ray_length = ray.dir.length ();
+	
 	
 	if ray_length == 0 {
-		return Ray2TraceResult::Miss;
+		//return Ray2TraceResult::Miss;
 	}
 	
 	let basis = get_ray_basis (ray, ray_length);
@@ -302,10 +315,11 @@ pub fn ray_trace_line (ray: &Ray2, line: &WideLine) -> Ray2TraceResult {
 	
 	// Line will have zero y difference resulting in a divide by zero
 	if line.start.y == line.end.y {
-		//return Ray2TraceResult::Miss;
+		return Ray2TraceResult::Miss;
 	}
 	
 	// Apply SAT
+	// These are not causing the penetration bug
 	if line.start.y > 0 && line.end.y > 0 {
 		return Ray2TraceResult::Miss;
 	}
@@ -331,7 +345,7 @@ pub fn ray_trace_line (ray: &Ray2, line: &WideLine) -> Ray2TraceResult {
 	// The line segments intersect
 	let t = crossing_x / ray_length;
 	
-	let safe_point = ray.start + ray.dir * t + big_normal * margin;
+	let safe_point = ray.start + ray.dir * t /*+ big_normal * margin*/;
 	
 	return Ray2TraceResult::Hit (
 		t,
