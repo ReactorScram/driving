@@ -11,7 +11,3 @@ rayon = "0.6"
 [dependencies.int_traits]
 git = "https://github.com/tiehuis/int_traits"
 rev = "150ff52652cd700ae57e284c547b92673dac91c1"
-
-[dependencies.svg]
-git = "https://github.com/bodoni/svg"
-rev = "d6a52ac1daf315f998936321ea8a3f925acfcc11"

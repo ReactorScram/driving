@@ -4,6 +4,9 @@ extern crate int_traits;
 
 use std::cmp::Ordering;
 use std::cmp::PartialOrd;
+use std::fmt::Debug;
+use std::fmt::Formatter;
+use std::fmt::Result;
 use std::ops::Add;
 use std::ops::Neg;
 use std::ops::Sub;
@@ -23,9 +26,15 @@ pub const HALF_FRACTIONAL_BITS: Int = 8;
 pub const FRACTIONAL_BITS: Int = HALF_FRACTIONAL_BITS * 2;
 pub const DENOMINATOR: Int = 1 << FRACTIONAL_BITS;
 
-#[derive (Clone, Copy, Debug, Eq, PartialEq)]
+#[derive (Clone, Copy, Eq, PartialEq)]
 pub struct Fx32 {
 	pub x: Int,
+}
+
+impl Debug for Fx32 {
+    fn fmt(&self, f: &mut Formatter) -> Result {
+		write! (f, "Fx32 {{ {} }}", self.to_f64 ())
+    }
 }
 
 impl Fx32 {
