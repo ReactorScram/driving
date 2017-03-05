@@ -107,7 +107,7 @@ pub fn test_ray_trace (filename: &str, offset: Fx32) -> Result <(), Error> {
 	let mut vertex_i = 1;
 	let mut polyline_start = vertex_i;
 	
-	for x in 29..32 {
+	for x in 0..32 {
 		let x = x * 16;
 		let mut particle = Ray2 {
 			start: Vec2 {
@@ -170,8 +170,15 @@ pub fn test_ray_trace (filename: &str, offset: Fx32) -> Result <(), Error> {
 				Ray2TraceResult::Hit (_, ccd_pos, normal) => {
 					println! ("{}: Hit from {:?} to {:?}", tick, particle.start, ccd_pos);
 					
+					println! ("Incoming vel {:?}", particle.dir);
+					
 					particle.start = ccd_pos;
-					particle.dir = particle.dir.reflect (normal) * Fx32::from_q (768, 1024);
+					if particle.dir * normal < 0 {
+						particle.dir = particle.dir.reflect (normal) * Fx32::from_q (768, 1024);
+					}
+					
+					println! ("Outgoing vel {:?}", particle.dir);
+					
 					//particle.dir = normal;
 					num_bounces += 1;
 				},
@@ -246,7 +253,7 @@ pub fn ray_trace_line (ray: &Ray2, line: &WideLine) -> Ray2TraceResult {
 	let ray_length_sq = ray.dir.length_sq ();
 	let ray_length = ray_length_sq.sqrt ();
 	
-	let margin = Fx32::from_q (128, 256);
+	let margin = Fx32::from_q (0, 256);
 	
 	let line_tangent: Vec2 <Fx32> = line.end - line.start;
 	let line_tangent = Vec2::<Fx32> {
@@ -290,6 +297,10 @@ pub fn ray_trace_line (ray: &Ray2, line: &WideLine) -> Ray2TraceResult {
 		}
 	}
 	
+	if ray.dir * line_normal > 0 {
+		return Ray2TraceResult::Miss;
+	}
+	
 	let extrude_vector = (line.radius) * Vec2::<Fx32>::from (line_normal);
 	// Extrude the line
 	let line = WideLine {
@@ -297,8 +308,6 @@ pub fn ray_trace_line (ray: &Ray2, line: &WideLine) -> Ray2TraceResult {
 		end: line.end + extrude_vector,
 		radius: Fx32::from_int (0),
 	};
-	
-	
 	
 	if ray_length == 0 {
 		//return Ray2TraceResult::Miss;
@@ -338,7 +347,7 @@ pub fn ray_trace_line (ray: &Ray2, line: &WideLine) -> Ray2TraceResult {
 	// lerp
 	let crossing_x = line.start.x * (Fx32::from_int (1) - obstacle_t) + line.end.x * obstacle_t;
 	
-	if crossing_x < 0 || crossing_x > ray_length + margin {
+	if crossing_x <= 0 || crossing_x > ray_length + margin {
 		return Ray2TraceResult::Miss;
 	}
 	

@@ -61,7 +61,7 @@ impl <Real: Into <Fx32> + From <Fx32> + From <Fx32Small> + Neg + Mul <Fx32> + Mu
 	pub fn reflect (self, n: Vec2 <Fx32Small>) -> Vec2 <Real> {
 		let projection = Fx32::from (self * n);
 		if projection >= 0 {
-			return self;
+			//return self;
 		}
 		
 		let double_proj = Fx32 { x: projection.x * 2 };
