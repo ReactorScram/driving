@@ -58,15 +58,15 @@ pub fn test_ray_trace () -> Result <(), Error> {
 	
 	let obstacle = vec! [
 	Circle {
-		center: Vec2 {x: Fx32::from_q (133, scale), y: Fx32::from_q (512 - 34, scale)},
+		center: Vec2 {x: Fx32::from_q (40, scale), y: Fx32::from_q (470 - 34, scale)},
 		radius: Fx32::from_q (20, scale),
 	},
 	Circle {
-		center: Vec2 {x: Fx32::from_q (256, scale), y: Fx32::from_q (501, scale)},
+		center: Vec2 {x: Fx32::from_q (256, scale), y: Fx32::from_q (512, scale)},
 		radius: Fx32::from_q (20, scale),
 	},
 	Circle {
-		center: Vec2 {x: Fx32::from_q (404, scale), y: Fx32::from_q (501, scale)},
+		center: Vec2 {x: Fx32::from_q (480, scale), y: Fx32::from_q (460, scale)},
 		radius: Fx32::from_q (20, scale),
 	},
 	];
@@ -99,7 +99,7 @@ pub fn test_ray_trace () -> Result <(), Error> {
 	let mut vertex_i = 1;
 	let mut polyline_start = vertex_i;
 	
-	for x in 66..202 {
+	for x in 0..256 {
 		let x = x * 2;
 		let mut particle = Ray2 {
 			start: Vec2 {
@@ -142,7 +142,7 @@ pub fn test_ray_trace () -> Result <(), Error> {
 				},
 				Ray2TraceResult::Hit (_, ccd_pos, normal) => {
 					particle.start = ccd_pos;
-					particle.dir = particle.dir.reflect (normal) * Fx32::from_q (1023, 1024);
+					particle.dir = particle.dir.reflect (normal) * Fx32::from_q (768, 1024);
 					//particle.dir = normal;
 					num_bounces += 1;
 				},
@@ -239,7 +239,7 @@ pub fn ray_trace_line (ray: &Ray2, line: &WideLine) -> Ray2TraceResult {
 	
 	let along = (ray.start - line.start) * line_tangent;
 	
-	if sdf.abs () <= line.radius && along > 0 && along < (line.end - line.start) * line_tangent {
+	if sdf.abs () <= line.radius + margin && along > 0 && along < (line.end - line.start) * line_tangent {
 		// Ray has already started inside and we should push it out
 		let towards = -Fx32::from (ray.dir * line_normal);
 		
