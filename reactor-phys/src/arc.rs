@@ -25,18 +25,21 @@ pub struct Arc {
 }
 
 impl Arc {
-	pub fn new1 (circle: Circle, neighbor: Vec2 <Fx32>) -> Arc {
+	pub fn new1 (circle: &Circle, neighbor: Vec2 <Fx32>) -> Arc {
 		Arc::new2 (&circle, neighbor, neighbor)
 	}
 	
 	// Oh won't you be my neighbor
 	pub fn new2 (circle: &Circle, neighbor0: Vec2 <Fx32>, neighbor1: Vec2 <Fx32>) -> Arc 
 	{
+		let to_0 = (neighbor0 - circle.center) * Fx32::from_q (1, 256);
+		let to_1 = (neighbor1 - circle.center) * Fx32::from_q (1, 256);
+		
 		Arc {
 			circle: *circle,
 			rejected_normals: [
-				(neighbor0 - circle.center).normalized (),
-				(neighbor1 - circle.center).normalized (),
+				to_0.normalized (),
+				to_1.normalized (),
 			],
 		}
 	}

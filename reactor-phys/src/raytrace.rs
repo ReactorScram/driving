@@ -71,18 +71,18 @@ pub fn test_ray_trace (filename: &str, offset: Fx32) -> Result <(), Error> {
 	];
 	
 	let obstacle = vec! [
-	Circle {
+	Arc::new1 (&Circle {
 		center: points [0],
 		radius: Fx32::from_q (20, scale),
-	},
-	Circle {
+	}, points [1]),
+	Arc::new2 (&Circle {
 		center: points [1],
 		radius: Fx32::from_q (20, scale),
-	},
-	Circle {
+	}, points [0], points [2]),
+	Arc::new1 (&Circle {
 		center: points [2],
 		radius: Fx32::from_q (20, scale),
-	},
+	}, points [1]),
 	];
 	
 	let lines = vec! [
@@ -114,7 +114,7 @@ pub fn test_ray_trace (filename: &str, offset: Fx32) -> Result <(), Error> {
 	let mut vertex_i = 1;
 	let mut polyline_start = vertex_i;
 	
-	for x in 0..64 {
+	for x in 39..64 {
 		let x = x * 4;
 		let mut particle = Ray2 {
 			start: Vec2 {
@@ -134,9 +134,11 @@ pub fn test_ray_trace (filename: &str, offset: Fx32) -> Result <(), Error> {
 		
 		for tick in 0..500 {
 			let trace_result = {
-				let point_results = obstacle.iter ().map (|obstacle| ray_trace_circle_2 (&apply_dt (&particle, dt), obstacle));
+				let dt_particle = apply_dt (&particle, dt);
 				
-				let line_results = lines.iter ().map (|line| ray_trace_line_2 (&apply_dt (&particle, dt), line)); 
+				let point_results = obstacle.iter ().map (|obstacle| ray_trace_arc (&dt_particle, obstacle));
+				
+				let line_results = lines.iter ().map (|line| ray_trace_line_2 (&dt_particle, line)); 
 				
 				point_results.chain (line_results).fold ( Ray2TraceResult::Miss, fold_closer_result)
 			};
@@ -354,11 +356,22 @@ pub fn ray_trace_circle_2 (ray: &Ray2, circle: &Circle) -> Ray2TraceResult {
 	}
 	
 	let t = ray_space_x / ray_length;
-	let ccd_pos = ray.start + ray.dir * t;
+	let t = Fx32 { x: cmp::max (t.x, Fx32::from_int (0).x) };
 	
 	if t <= 1 {
+		let ccd_pos = ray.start + ray.dir * t;
+		let disp = ccd_pos - circle.center;
+		let dist_sq = disp.length_sq ();
+		let ccd_pos = if dist_sq < circle.radius.square () 
+		{
+			circle.center + disp * (circle.radius / dist_sq.sqrt ())
+		}
+		else {
+			ccd_pos
+		};
+		
 		return Ray2TraceResult::Hit (
-			Fx32 { x: cmp::max (t.x, Fx32::from_int (0).x) },
+			t,
 			ccd_pos,
 			((ccd_pos - circle.center) / circle.radius).to_small (),
 		);
