@@ -133,39 +133,19 @@ pub fn test_ray_trace (filename: &str, offset: Fx32) -> Result <(), Error> {
 	let scale = 1;
 	//let scale_fx = Fx32::from_int (scale);
 	
-	let points = vec! [
-		Vec2 {x: Fx32::from_q (40, scale), y: Fx32::from_q (470 - 34, scale)},
-		Vec2 {x: Fx32::from_q (256, scale), y: Fx32::from_q (512, scale)},
-		Vec2 {x: Fx32::from_q (480, scale), y: Fx32::from_q (460, scale)},
-	];
+	let vec_from_q = |x, y, q| {
+		Vec2 { x: Fx32::from_q (x, q), y: Fx32::from_q (y, q) }
+	};
 	
-	let obstacle = vec! [
-	Arc::new1 (&Circle {
-		center: points [0],
-		radius: Fx32::from_q (20, scale),
-	}, points [1]),
-	Arc::new2 (&Circle {
-		center: points [1],
-		radius: Fx32::from_q (20, scale),
-	}, points [0], points [2]),
-	Arc::new1 (&Circle {
-		center: points [2],
-		radius: Fx32::from_q (20, scale),
-	}, points [1]),
-	];
+	let radius = Fx32::from_q (20, scale);
 	
-	let lines = vec! [
-	WideLine {
-		start: points [0],
-		end: points [1],
-		radius: Fx32::from_q (20, scale),
-	},
-	WideLine {
-		start: points [2],
-		end: points [1],
-		radius: Fx32::from_q (20, scale),
-	},
-	];
+	let capsule = PolyCapsule::collect (&[
+	PolyCapsule::new (&[
+		vec_from_q (40, 470 - 34, scale),
+		vec_from_q (256, 512, scale),
+		vec_from_q (480, 460, scale),
+	], radius),
+	]);
 	
 	let mut num_bounces = 0;
 	let mut num_pops = 0;
@@ -205,9 +185,9 @@ pub fn test_ray_trace (filename: &str, offset: Fx32) -> Result <(), Error> {
 			let trace_result = {
 				let dt_particle = apply_dt (&particle, dt);
 				
-				let point_results = obstacle.iter ().map (|obstacle| ray_trace_arc (&dt_particle, obstacle));
+				let point_results = capsule.arcs.iter ().map (|obstacle| ray_trace_arc (&dt_particle, obstacle));
 				
-				let line_results = lines.iter ().map (|line| ray_trace_line_2 (&dt_particle, line)); 
+				let line_results = capsule.lines.iter ().map (|line| ray_trace_line_2 (&dt_particle, line)); 
 				
 				point_results.chain (line_results).fold ( Ray2TraceResult::Miss, fold_closer_result)
 			};
