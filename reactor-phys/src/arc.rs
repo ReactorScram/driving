@@ -21,6 +21,7 @@ the joint. (The upper-left quadrant in this ascii diagram)
 */
 
 // TODO: Allow degenerate Arcs to be Circles
+#[derive (Clone, Copy, Debug)]
 pub struct Arc {
 	pub circle: Circle,
 	pub rejected_normals: [Vec2 <Fx32Small>; 2],

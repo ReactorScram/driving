@@ -104,6 +104,29 @@ impl PolyCapsule {
 			lines: lines,
 		}
 	}
+	
+	pub fn collect (capsules: &[PolyCapsule]) -> PolyCapsule {
+		PolyCapsule {
+			arcs: {
+				let mut arcs = vec! [];
+				
+				for capsule in capsules.iter () {
+					arcs.extend (capsule.arcs.clone ());
+				}
+				
+				arcs
+			},
+			lines: {
+				let mut lines = vec! [];
+				
+				for capsule in capsules.iter () {
+					lines.extend (capsule.lines.clone ());
+				}
+				
+				lines
+			},
+		}
+	}
 }
 
 pub fn test_ray_trace (filename: &str, offset: Fx32) -> Result <(), Error> {

@@ -4,6 +4,7 @@
 use fx32::Fx32;
 use vec2::Vec2;
 
+#[derive (Clone, Copy, Debug)]
 pub struct WideLine {
 	pub start: Vec2 <Fx32>,
 	pub end: Vec2 <Fx32>,
