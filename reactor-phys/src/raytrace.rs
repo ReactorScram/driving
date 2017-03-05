@@ -45,6 +45,13 @@ pub fn write_vec2 <T> (writer: &mut T, v: &Vec2 <Fx32>) where T: Write {
 	write! (writer, "v {} 0 {}\n", v.x.to_f64 () / 256.0, v.y.to_f64 () / 256.0).unwrap ();
 }
 
+pub fn apply_dt (ray: &Ray2, dt: Fx32Small) -> Ray2 {
+	Ray2 {
+		start: ray.start,
+		dir: ray.dir * dt,
+	}
+}
+
 pub fn test_ray_trace () -> Result <(), Error> {
 	let scale = 1;
 	//let scale_fx = Fx32::from_int (scale);
@@ -80,7 +87,7 @@ pub fn test_ray_trace () -> Result <(), Error> {
 	let mut num_bounces = 0;
 	let mut num_ticks = 0;
 	
-	let inv_dt = 8;
+	let inv_dt = 4;
 	let gravity = Vec2::<Fx32> {
 		x: Fx32::from_q (0, 1),
 		y: Fx32::from_q (2, 1),
@@ -108,16 +115,16 @@ pub fn test_ray_trace () -> Result <(), Error> {
 		write_vec2 (&mut writer, &particle.start);
 		vertex_i += 1;
 		
+		let dt = Fx32::from_q (1, inv_dt).to_small ();
+		
 		for _ in 0..4000 {
 			let trace_result = {
-				let point_results = obstacle.iter ().map (|obstacle| ray_trace_circle_2 (&particle, obstacle));
+				let point_results = obstacle.iter ().map (|obstacle| ray_trace_circle_2 (&apply_dt (&particle, dt), obstacle));
 				
-				let line_results = lines.iter ().map (|line| ray_trace_line (&particle, line)); 
+				let line_results = lines.iter ().map (|line| ray_trace_line (&apply_dt (&particle, dt), line)); 
 				
 				point_results.chain (line_results).fold ( Ray2TraceResult::Miss, fold_closer_result)
 			};
-			
-			let dt = Fx32::from_q (1, inv_dt).to_small ();
 			
 			match trace_result {
 				Ray2TraceResult::Miss => {
@@ -226,7 +233,9 @@ pub fn ray_trace_line (ray: &Ray2, line: &WideLine) -> Ray2TraceResult {
 		-line_normal
 	};
 	
-	if sdf.abs () <= line.radius {
+	let along = (ray.start - line.start) * line_tangent;
+	
+	if sdf.abs () <= line.radius && along > 0 && along < (line.end - line.start) * line_tangent {
 		// Ray has already started inside and we should push it out
 		let towards = -Fx32::from (ray.dir * line_normal);
 		
