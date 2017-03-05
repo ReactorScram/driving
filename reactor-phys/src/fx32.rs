@@ -269,3 +269,27 @@ impl Mul <Fx32> for Fx32Small {
 		//self.x.mul_64 (o)
 	}
 }
+
+impl Mul <Fx32Small> for Fx32Small {
+	type Output = Fx32Small;
+	
+	fn mul (self, o: Fx32Small) -> Fx32Small {
+		Fx32Small {
+			x: Fx32 {
+				x: ((self.x.x >> 2) * (o.x.x >> 2)) >> (FRACTIONAL_BITS - 2 - 2)
+			}
+		}
+	}
+}
+
+impl PartialEq <i32> for Fx32Small {
+	fn eq (&self, o: &i32) -> bool {
+		self.x.x == Fx32::from_int (*o).x
+	}
+}
+
+impl PartialOrd <i32> for Fx32Small {
+	fn partial_cmp (&self, o: &i32) -> Option <Ordering> {
+		self.x.x.partial_cmp (&Fx32::from_int (*o).x)
+	}
+}

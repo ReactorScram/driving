@@ -63,30 +63,36 @@ pub fn test_ray_trace (filename: &str, offset: Fx32) -> Result <(), Error> {
 	let scale = 1;
 	//let scale_fx = Fx32::from_int (scale);
 	
+	let points = vec! [
+		Vec2 {x: Fx32::from_q (40, scale), y: Fx32::from_q (470 - 34, scale)},
+		Vec2 {x: Fx32::from_q (256, scale), y: Fx32::from_q (512, scale)},
+		Vec2 {x: Fx32::from_q (480, scale), y: Fx32::from_q (460, scale)},
+	];
+	
 	let obstacle = vec! [
 	Circle {
-		center: Vec2 {x: Fx32::from_q (40, scale), y: Fx32::from_q (470 - 34, scale)},
+		center: points [0],
 		radius: Fx32::from_q (20, scale),
 	},
 	Circle {
-		center: Vec2 {x: Fx32::from_q (256, scale), y: Fx32::from_q (512, scale)},
+		center: points [1],
 		radius: Fx32::from_q (20, scale),
 	},
 	Circle {
-		center: Vec2 {x: Fx32::from_q (480, scale), y: Fx32::from_q (460, scale)},
+		center: points [2],
 		radius: Fx32::from_q (20, scale),
 	},
 	];
 	
 	let lines = vec! [
 	WideLine {
-		start: obstacle [0].center,
-		end: obstacle [1].center,
+		start: points [0],
+		end: points [1],
 		radius: Fx32::from_q (20, scale),
 	},
 	WideLine {
-		start: obstacle [2].center,
-		end: obstacle [1].center,
+		start: points [2],
+		end: points [1],
 		radius: Fx32::from_q (20, scale),
 	},
 	];

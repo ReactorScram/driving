@@ -1,6 +1,7 @@
 use fx32::Fx32;
 use vec2::Vec2;
 
+#[derive (Clone, Copy, Debug)]
 pub struct Circle {
 	pub center: Vec2 <Fx32>,
 	pub radius: Fx32,
