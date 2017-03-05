@@ -161,7 +161,7 @@ pub fn test_ray_trace (filename: &str, offset: Fx32) -> Result <(), Error> {
 				Ray2TraceResult::Pop (ccd_pos, normal) => {
 					println! ("{}: Pop from {:?} to {:?}", tick, particle.start, ccd_pos);
 					
-					let reflected_dir = particle.dir.reflect_res (normal, Fx32::from_q (0, 1024).to_small ());
+					let reflected_dir = particle.dir.reflect_res (normal, Fx32::from_q (512, 1024).to_small ());
 					
 					let new_dir = reflected_dir;// + gravity * dt;
 					/*
@@ -185,7 +185,7 @@ pub fn test_ray_trace (filename: &str, offset: Fx32) -> Result <(), Error> {
 					
 					particle.start = ccd_pos;
 					if particle.dir * normal < 0 {
-						particle.dir = particle.dir.reflect_res (normal, Fx32::from_q (0, 1024).to_small ());
+						particle.dir = particle.dir.reflect_res (normal, Fx32::from_q (512, 1024).to_small ());
 					}
 					
 					println! ("Outgoing vel {:?}", particle.dir);
