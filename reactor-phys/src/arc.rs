@@ -19,6 +19,8 @@ For a 3-point polycapsule, each end will have a semicircle arc, and the
 arc in the middle (2) will be reduced so it only covers the convex side of
 the joint. (The upper-left quadrant in this ascii diagram)
 */
+
+// TODO: Allow degenerate Arcs to be Circles
 pub struct Arc {
 	pub circle: Circle,
 	pub rejected_normals: [Vec2 <Fx32Small>; 2],

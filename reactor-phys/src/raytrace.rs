@@ -60,6 +60,52 @@ pub fn apply_dt (ray: &Ray2, dt: Fx32Small) -> Ray2 {
 	}
 }
 
+pub struct PolyCapsule {
+	pub arcs: Vec <Arc>,
+	pub lines: Vec <WideLine>,
+}
+
+impl PolyCapsule {
+	pub fn new (points: &[Vec2 <Fx32>], radius: Fx32) -> PolyCapsule
+	{
+		let count = points.len ();
+		// A single circle is not a capsule
+		assert! (count >= 2);
+		
+		let lines = {
+			let mut lines = vec! [];
+			
+			lines.push (WideLine { start: points [0], end: points [1], radius: radius });
+			
+			for i in 1..count {
+				lines.push (WideLine { start: points [i - 1], end: points [i], radius: radius });
+			}
+			
+			lines
+		};
+		
+		let arcs = {
+			let mut arcs = vec! [];
+			let circles: Vec <Circle> = points.iter ().map (|p| Circle { center: *p, radius: radius }).collect ();
+			
+			arcs.push (Arc::new1 (&circles [0], points [1]));
+			
+			for i in 1..count - 1 {
+				arcs.push (Arc::new2 (&circles [i], points [i - 1], points [i + 1]));
+			}
+			
+			arcs.push (Arc::new1 (&circles [count - 1], points [count - 2]));
+			
+			arcs
+		};
+		
+		PolyCapsule {
+			arcs: arcs,
+			lines: lines,
+		}
+	}
+}
+
 pub fn test_ray_trace (filename: &str, offset: Fx32) -> Result <(), Error> {
 	let scale = 1;
 	//let scale_fx = Fx32::from_int (scale);
@@ -114,8 +160,8 @@ pub fn test_ray_trace (filename: &str, offset: Fx32) -> Result <(), Error> {
 	let mut vertex_i = 1;
 	let mut polyline_start = vertex_i;
 	
-	for x in 0..128 {
-		let x = x * 4;
+	for x in 0..32 {
+		let x = x * 16;
 		let mut particle = Ray2 {
 			start: Vec2 {
 				x: Fx32::from_q (x * 2, scale * 2) + offset,
