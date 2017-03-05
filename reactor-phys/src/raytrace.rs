@@ -117,7 +117,7 @@ pub fn test_ray_trace () -> Result <(), Error> {
 		
 		let dt = Fx32::from_q (1, inv_dt).to_small ();
 		
-		for _ in 0..4000 {
+		for _ in 0..500 {
 			let trace_result = {
 				let point_results = obstacle.iter ().map (|obstacle| ray_trace_circle_2 (&apply_dt (&particle, dt), obstacle));
 				
@@ -215,6 +215,8 @@ pub fn ray_trace_line (ray: &Ray2, line: &WideLine) -> Ray2TraceResult {
 		return Ray2TraceResult::Miss;
 	}
 	
+	let margin = Fx32::from_q (1, 256);
+	
 	let line_tangent: Vec2 <Fx32> = line.end - line.start;
 	let line_tangent = Vec2::<Fx32> {
 		x: line_tangent.x * Fx32::from_q (1, 256),
@@ -233,14 +235,15 @@ pub fn ray_trace_line (ray: &Ray2, line: &WideLine) -> Ray2TraceResult {
 		-line_normal
 	};
 	
+	let big_normal: Vec2 <Fx32> = line_normal.into ();
+	
 	let along = (ray.start - line.start) * line_tangent;
 	
 	if sdf.abs () <= line.radius && along > 0 && along < (line.end - line.start) * line_tangent {
 		// Ray has already started inside and we should push it out
 		let towards = -Fx32::from (ray.dir * line_normal);
 		
-		let big_normal: Vec2 <Fx32> = line_normal.into ();
-		let safe_point = ray.start + big_normal * (line.radius - sdf.abs ());
+		let safe_point = ray.start + big_normal * (line.radius - sdf.abs () + margin);
 		
 		if towards > 0 {
 			// Ray is moving deeper inside - Pop it out and reflect it
@@ -313,17 +316,11 @@ pub fn ray_trace_line (ray: &Ray2, line: &WideLine) -> Ray2TraceResult {
 	// The line segments intersect
 	let t = crossing_x / ray_length;
 	
-	//let world_normal = basis.from_space (&Vec2::<Fx32>::from (line_normal));
-	//assert! (world_normal.length_sq () < Fx32::from_int (4), "Long normal");
-	/*
-	let world_normal = Vec2::<Fx32> {
-		x: Fx32::from_q (1, 128),
-		y: Fx32::from_q (1, 1),
-	};
-	*/
+	let safe_point = ray.start + ray.dir * t + big_normal * (line.radius + margin);
+	
 	return Ray2TraceResult::Hit (
 		t,
-		ray.start + ray.dir * t,
+		safe_point,
 		line_normal,
 	);
 }
