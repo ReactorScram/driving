@@ -85,8 +85,8 @@ pub fn test_ray_trace (filename: &str, offset: Fx32) -> Result <(), Error> {
 		radius: Fx32::from_q (20, scale),
 	},
 	WideLine {
-		start: obstacle [1].center,
-		end: obstacle [2].center,
+		start: obstacle [2].center,
+		end: obstacle [1].center,
 		radius: Fx32::from_q (20, scale),
 	},
 	];
