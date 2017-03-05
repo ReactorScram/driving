@@ -135,7 +135,7 @@ impl <Real: Mul <Real2> + Into <Fx32> + From <Fx32> + From <<Real as Mul <Real2>
 }
 
 // Scalar product
-impl <Real: From <<Real as Mul<Real2>>::Output> + Mul <Real2>, Real2: Into <Fx32>> Mul <Real2> for Vec2 <Real> where Real: Copy, Real2: Copy {
+impl <Real: From <<Real as Mul<Real2>>::Output> + Mul <Real2>, Real2: Into <Fx32>> Mul <Real2> for Vec2 <Real> where Real: Copy, Real2: Copy, Fx32: From <Real> {
 	type Output = Vec2 <Real>;
 	
 	fn mul (self, o: Real2) -> Vec2 <Real> {
