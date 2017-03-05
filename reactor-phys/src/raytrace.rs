@@ -127,6 +127,18 @@ impl PolyCapsule {
 			},
 		}
 	}
+	
+	pub fn affine <F> (&self, f: F) -> PolyCapsule where F: Fn (Vec2 <Fx32>) -> Vec2 <Fx32>
+	{
+		PolyCapsule {
+			arcs: self.arcs.iter ().map (|a| Arc { circle: Circle { center: f (a.circle.center), radius: a.circle.radius }, rejected_normals: a.rejected_normals }).collect (),
+			lines: self.lines.iter ().map (|l| WideLine { start: f (l.start), end: f (l.end), radius: l.radius }).collect (),
+		}
+	}
+	
+	pub fn translate (&self, offset: Vec2 <Fx32>) -> PolyCapsule {
+		self.affine (|p| p + offset)
+	}
 }
 
 pub fn test_ray_trace (filename: &str, offset: Fx32) -> Result <(), Error> {
@@ -141,11 +153,21 @@ pub fn test_ray_trace (filename: &str, offset: Fx32) -> Result <(), Error> {
 	
 	let capsule = PolyCapsule::collect (&[
 	PolyCapsule::new (&[
-		vec_from_q (40, 470 - 34, scale),
-		vec_from_q (256, 512, scale),
-		vec_from_q (480, 460, scale),
+		vec_from_q (245, 240, scale),
+		vec_from_q (255, 340, scale),
+		vec_from_q (285, 340, scale),
+		vec_from_q (295, 240, scale),
+		vec_from_q (400, 340, scale),
+		vec_from_q (450, 240, scale),
+		vec_from_q (500, 340, scale),
+		vec_from_q (600, 350, scale),
+		vec_from_q (650, 330, scale),
 	], radius),
-	]);
+	PolyCapsule::new (&[
+		vec_from_q (210, 240, scale),
+		vec_from_q (210, 340, scale),
+	], radius),
+	]).translate (vec_from_q (-(512 - 440) / 2, 0, scale));
 	
 	let mut num_bounces = 0;
 	let mut num_pops = 0;
@@ -359,7 +381,7 @@ pub fn ray_trace_line_2 (ray: &Ray2, line: &WideLine) -> Ray2TraceResult {
 		);
 	}
 	
-	if end_distance > 0 {
+	if end_distance >= 0 {
 		// Ray will not reach the plane in this timestep, leave it be
 		return Ray2TraceResult::Miss;
 	}
