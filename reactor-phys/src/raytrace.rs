@@ -106,8 +106,8 @@ pub fn test_ray_trace (filename: &str, offset: Fx32) -> Result <(), Error> {
 	let mut vertex_i = 1;
 	let mut polyline_start = vertex_i;
 	
-	for x in 0..128 {
-		let x = x * 4;
+	for x in 0..32 {
+		let x = x * 16;
 		let mut particle = Ray2 {
 			start: Vec2 {
 				x: Fx32::from_q (x * 2, scale * 2) + offset,
@@ -144,7 +144,7 @@ pub fn test_ray_trace (filename: &str, offset: Fx32) -> Result <(), Error> {
 						y: Fx32 { x: sum_dir.y.x / 2 },
 					};
 					
-					particle.start = particle.start + (average_dir * dt);
+					particle.start = particle.start + (particle.dir * dt);
 					particle.dir = new_dir;
 				},
 				Ray2TraceResult::Pop (ccd_pos, normal) => {
@@ -159,7 +159,7 @@ pub fn test_ray_trace (filename: &str, offset: Fx32) -> Result <(), Error> {
 						y: Fx32 { x: sum_dir.y.x / 2 },
 					};
 					
-					particle.start = ccd_pos + (average_dir * dt);
+					particle.start = ccd_pos;// + (average_dir * dt);
 					particle.dir = new_dir;
 				},
 				Ray2TraceResult::Hit (_, ccd_pos, normal) => {
@@ -237,7 +237,7 @@ pub fn ray_trace_line (ray: &Ray2, line: &WideLine) -> Ray2TraceResult {
 	// so just drop it now
 	assert! (line.start != line.end);
 	
-	let margin = Fx32::from_q (256, 256);
+	let margin = Fx32::from_q (0, 256);
 	
 	let line_tangent: Vec2 <Fx32> = line.end - line.start;
 	let line_tangent = Vec2::<Fx32> {
