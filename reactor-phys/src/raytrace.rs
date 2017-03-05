@@ -107,8 +107,8 @@ pub fn test_ray_trace (filename: &str, offset: Fx32) -> Result <(), Error> {
 	let mut vertex_i = 1;
 	let mut polyline_start = vertex_i;
 	
-	for x in 0..32 {
-		let x = x * 16;
+	for x in 0..64 {
+		let x = x * 4;
 		let mut particle = Ray2 {
 			start: Vec2 {
 				x: Fx32::from_q (x * 2, scale * 2) + offset,
@@ -260,11 +260,11 @@ pub fn ray_trace_line_2 (ray: &Ray2, line: &WideLine) -> Ray2TraceResult {
 	
 	let ray_end = ray.start + ray.dir;
 	
-	// TODO: Probably a way to optimize this into a series of inequalities
-	let line_length = (line.end - line.start) * line_tangent;
-	
 	let start_along = (ray.start - line.start) * line_tangent;
 	let end_along = (ray_end - line.start) * line_tangent;
+	
+	// TODO: Probably a way to optimize this into a series of inequalities
+	let line_length = (line.end - line.start) * line_tangent;
 	
 	if start_along < 0 && end_along < 0 {
 		return Ray2TraceResult::Miss;
@@ -308,6 +308,16 @@ pub fn ray_trace_line_2 (ray: &Ray2, line: &WideLine) -> Ray2TraceResult {
 	
 	let t = (-start_distance) / (end_distance - start_distance);
 	let ccd_pos = ray.start + ray.dir * t;
+	
+	let ccd_along = start_along * (Fx32::from_int (1) - t) + end_along * t;
+	
+	if ccd_along < 0 {
+		return Ray2TraceResult::Miss;
+	}
+	if ccd_along > line_length {
+		return Ray2TraceResult::Miss;
+	}
+	
 	return Ray2TraceResult::Hit (t, ccd_pos, line_normal);
 }
 
