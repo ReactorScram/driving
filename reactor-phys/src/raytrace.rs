@@ -167,7 +167,7 @@ pub fn test_ray_trace (filename: &str, offset: Fx32) -> Result <(), Error> {
 		vec_from_q (210, 240, scale),
 		vec_from_q (210, 340, scale),
 	], radius),
-	]).translate (vec_from_q (-(512 - 440) / 2, 0, scale));
+	]).affine (|p| Vec2::<Fx32> {x: p.x, y: p.y} + vec_from_q (-200, 0, scale));
 	
 	let mut num_bounces = 0;
 	let mut num_pops = 0;
@@ -185,8 +185,8 @@ pub fn test_ray_trace (filename: &str, offset: Fx32) -> Result <(), Error> {
 	let mut vertex_i = 1;
 	let mut polyline_start = vertex_i;
 	
-	for x in 0..32 {
-		let x = x * 16;
+	for x in 0..128 {
+		let x = x * 4;
 		let mut particle = Ray2 {
 			start: Vec2 {
 				x: Fx32::from_q (x * 2, scale * 2) + offset,
