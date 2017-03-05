@@ -1,3 +1,4 @@
+use arc::Arc;
 use circle::Circle;
 use fx32::Fx32;
 use fx32::Fx32Small;
@@ -327,125 +328,6 @@ pub fn ray_trace_line_2 (ray: &Ray2, line: &WideLine) -> Ray2TraceResult {
 	return Ray2TraceResult::Hit (t, ccd_pos, line_normal);
 }
 
-pub fn ray_trace_line (ray: &Ray2, line: &WideLine) -> Ray2TraceResult {
-	// Line has zero length and so zero collision area
-	// If we run through the math we may get a 0 / 0 result
-	// so just drop it now
-	assert! (line.start != line.end);
-	
-	let ray_length_sq = ray.dir.length_sq ();
-	let ray_length = ray_length_sq.sqrt ();
-	
-	let margin = Fx32::from_q (0, 256);
-	
-	let line_tangent: Vec2 <Fx32> = line.end - line.start;
-	let line_tangent = Vec2::<Fx32> {
-		x: line_tangent.x * Fx32::from_q (1, 256),
-		y: line_tangent.y * Fx32::from_q (1, 256),
-	};
-	let line_normal = line_tangent.cross ().normalized ();
-	
-	let sdf: Fx32 = (ray.start - line.start) * line_normal;
-	
-	// Flip the normal so it's towards the ray
-	// This will allow us to extrude the correct side
-	let line_normal = if sdf > 0 {
-		line_normal
-	}
-	else {
-		-line_normal
-	};
-	
-	let big_normal: Vec2 <Fx32> = line_normal.into ();
-	
-	let along = (ray.start - line.start) * line_tangent;
-	let within_bounds = along > 0 && along < (line.end - line.start) * line_tangent;
-	
-	let starts_inside = sdf.abs () <= line.radius;
-	let ends_inside = (ray.start + ray.dir - line.start) * line_normal <= line.radius;
-	
-	if (starts_inside || (ends_inside && ray_length == 0)) && within_bounds {
-		// Ray has already started inside and we should push it out
-		let towards = -Fx32::from (ray.dir * line_normal);
-		
-		let safe_point = ray.start + big_normal * (line.radius - sdf.abs () + margin);
-		
-		if towards > 0 {
-			// Ray is moving deeper inside - Pop it out and reflect it
-			return Ray2TraceResult::Pop (safe_point, line_normal);
-		}
-		else {
-			// Ray is moving out - Pop it out but consume its timestep
-			return Ray2TraceResult::Pop (safe_point, line_normal);
-		}
-	}
-	
-	if ray.dir * line_normal > 0 {
-		return Ray2TraceResult::Miss;
-	}
-	
-	let extrude_vector = (line.radius) * Vec2::<Fx32>::from (line_normal);
-	// Extrude the line
-	let line = WideLine {
-		start: line.start + extrude_vector,
-		end: line.end + extrude_vector,
-		radius: Fx32::from_int (0),
-	};
-	
-	if ray_length == 0 {
-		//return Ray2TraceResult::Miss;
-	}
-	
-	let basis = get_ray_basis (ray, ray_length);
-	
-	// Transform the line to ray space
-	let line = WideLine {
-		start: basis.to_space (&(line.start - ray.start)),
-		end: basis.to_space (&(line.end - ray.start)),
-		radius: line.radius,
-	};
-	
-	// Line will have zero y difference resulting in a divide by zero
-	if line.start.y == line.end.y {
-		return Ray2TraceResult::Miss;
-	}
-	
-	// Apply SAT
-	// These are not causing the penetration bug
-	if line.start.y > 0 && line.end.y > 0 {
-		return Ray2TraceResult::Miss;
-	}
-	else if line.start.y < 0 && line.end.y < 0 {
-		return Ray2TraceResult::Miss;
-	}
-	
-	// If we get here, we know that the obstacle line crosses our ray somewhere
-	
-	// Note: Lines must not have 0 length
-	let obstacle_t = (-line.start.y) / (line.end.y - line.start.y);
-	
-	assert! (obstacle_t >= 0);
-	assert! (obstacle_t <= 1, format!("{:?}", ray_length));
-	
-	// lerp
-	let crossing_x = line.start.x * (Fx32::from_int (1) - obstacle_t) + line.end.x * obstacle_t;
-	
-	if crossing_x <= 0 || crossing_x > ray_length + margin {
-		return Ray2TraceResult::Miss;
-	}
-	
-	// The line segments intersect
-	let t = crossing_x / ray_length;
-	
-	let safe_point = ray.start + ray.dir * t /*+ big_normal * margin*/;
-	
-	return Ray2TraceResult::Hit (
-		t,
-		safe_point,
-		line_normal,
-	);
-}
-
 pub fn ray_trace_circle_2 (ray: &Ray2, circle: &Circle) -> Ray2TraceResult {
 	let ray_length = ray.dir.length ();
 	let basis = get_ray_basis (ray, ray_length);
@@ -484,4 +366,9 @@ pub fn ray_trace_circle_2 (ray: &Ray2, circle: &Circle) -> Ray2TraceResult {
 	else {
 		return Ray2TraceResult::Miss;
 	}
+}
+
+pub fn ray_trace_arc (ray: &Ray2, arc: &Arc) -> Ray2TraceResult {
+	let circle_result = ray_trace_circle_2 (ray, &arc.circle);
+	arc.filter_collision (circle_result)
 }
