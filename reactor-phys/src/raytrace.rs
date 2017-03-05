@@ -114,7 +114,7 @@ pub fn test_ray_trace (filename: &str, offset: Fx32) -> Result <(), Error> {
 	let mut vertex_i = 1;
 	let mut polyline_start = vertex_i;
 	
-	for x in 39..64 {
+	for x in 0..128 {
 		let x = x * 4;
 		let mut particle = Ray2 {
 			start: Vec2 {
