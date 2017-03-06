@@ -15,7 +15,7 @@ use std::fs::File;
 
 #[derive (Clone, Copy)]
 pub enum Ray2TraceResult {
-	Hit (Fx32, Vec2 <Fx32>, Vec2 <Fx32Small>),
+	Hit (Fx32Small, Vec2 <Fx32>, Vec2 <Fx32Small>),
 	Pop (Vec2 <Fx32>, Vec2 <Fx32Small>),
 	Miss,
 }
@@ -31,7 +31,7 @@ pub fn fold_closer_result (a: Ray2TraceResult, b: Ray2TraceResult) -> Ray2TraceR
 					return a;
 				},
 				Ray2TraceResult::Hit (b_t, ..) => {
-					if a_t < b_t {
+					if a_t.x < b_t.x {
 						return a;
 					}
 					else {
@@ -249,14 +249,16 @@ pub fn test_ray_trace (filename: &str, offset: Fx32) -> Result <(), Error> {
 					
 					num_pops += 1;
 				},
-				Ray2TraceResult::Hit (_, ccd_pos, normal) => {
+				Ray2TraceResult::Hit (t, ccd_pos, normal) => {
 					println! ("{}: Hit from {:?} to {:?}", tick, particle.start, ccd_pos);
 					
 					println! ("Incoming vel {:?}", particle.dir);
 					
+					let new_dir = particle.dir + gravity * (dt * t);
+					
 					particle.start = ccd_pos;
 					if particle.dir * normal < 0 {
-						particle.dir = particle.dir.reflect_res (normal, Fx32::from_q (512, 1024).to_small ());
+						particle.dir = new_dir.reflect_res (normal, Fx32::from_q (512, 1024).to_small ());
 					}
 					
 					println! ("Outgoing vel {:?}", particle.dir);
@@ -398,7 +400,7 @@ pub fn ray_trace_line_2 (ray: &Ray2, line: &WideLine) -> Ray2TraceResult {
 		return Ray2TraceResult::Miss;
 	}
 	
-	return Ray2TraceResult::Hit (t, ccd_pos, line_normal);
+	return Ray2TraceResult::Hit (t.to_small (), ccd_pos, line_normal);
 }
 
 pub fn ray_trace_circle_2 (ray: &Ray2, circle: &Circle) -> Ray2TraceResult {
@@ -427,7 +429,7 @@ pub fn ray_trace_circle_2 (ray: &Ray2, circle: &Circle) -> Ray2TraceResult {
 	}
 	
 	let t = ray_space_x / ray_length;
-	let t = Fx32 { x: cmp::max (t.x, Fx32::from_int (0).x) };
+	let t = Fx32 { x: cmp::max (t.x, Fx32::from_int (0).x) }.to_small ();
 	
 	if t <= 1 {
 		let ccd_pos = ray.start + ray.dir * t;
