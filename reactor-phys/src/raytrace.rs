@@ -376,22 +376,17 @@ pub fn ray_trace_line_2 (ray: &Ray2, line: &WideLine) -> Ray2TraceResult {
 	let start_distance = sdf.abs () - line.radius;
 	let end_distance = (ray_end - line.start) * big_normal - line.radius;
 	
-	if start_distance < 0 {
-		// Ray was already inside the plane, pop it out
-		return Ray2TraceResult::Pop (
-			ray.start + big_normal * (line.radius - sdf.abs ()),
-			line_normal
-		);
-	}
-	
 	if end_distance >= 0 {
 		// Ray will not reach the plane in this timestep, leave it be
 		return Ray2TraceResult::Miss;
 	}
 	
-	let t = (-start_distance) / (end_distance - start_distance);
-	let ccd_pos = ray.start + ray.dir * t;
+	if (end_distance - start_distance).x >> 8 == 0 {
+		// Divide by zero
+		return Ray2TraceResult::Miss;
+	}
 	
+	let t = (-start_distance) / (end_distance - start_distance);
 	let ccd_along = start_along * (Fx32::from_int (1) - t) + end_along * t;
 	
 	if ccd_along < 0 {
@@ -400,6 +395,16 @@ pub fn ray_trace_line_2 (ray: &Ray2, line: &WideLine) -> Ray2TraceResult {
 	if ccd_along > line_length {
 		return Ray2TraceResult::Miss;
 	}
+	
+	if start_distance < 0 {
+		// Ray was already inside the plane, pop it out
+		return Ray2TraceResult::Pop (
+			ray.start + big_normal * (line.radius - sdf.abs ()),
+			line_normal
+		);
+	}
+	
+	let ccd_pos = ray.start + ray.dir * t;
 	
 	return Ray2TraceResult::Hit (t.to_small (), ccd_pos, line_normal);
 }

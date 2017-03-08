@@ -8,10 +8,18 @@ function M:new (love)
 	self.love = love
 	self.radius = 20
 	
-	self.time = 10
 	self.timestep = FixedTimestep (60, 1)
 	self.selected_particle = 0
 	
+	self:reset_time ()
+	self:load_data ()
+end
+
+function M:reset_time () 
+	self.time = 10
+end
+
+function M:load_data ()
 	local f = io.open ("lines.obj", "rb")
 	self.particles = loadParticles (f)
 	f.close ()
@@ -146,32 +154,41 @@ end
 
 function M:keypressed (key)
 	if key == "p" then
-		self.paused = not self.paused
+		--self.paused = not self.paused
 	elseif key == "up" then
 		self.time = self.time - 1 / 32
 		self.paused = true
 	elseif key == "down" then
 		self.time = self.time + 1 / 32
 		self.paused = true
-	elseif key == "a" then
+	elseif key == "left" then
 		self.selected_particle = (self.selected_particle - 1) % (#self.particles + 1)
 		print ("Selected " .. self.selected_particle)
-	elseif key == "d" then
+	elseif key == "right" then
 		self.selected_particle = (self.selected_particle + 1) % (#self.particles + 1)
 		print ("Selected " .. self.selected_particle)
+	elseif key == "0" then
+		self:reset_time ()
+	elseif key == "f5" then
+		self:load_data ()
+		print "Reloaded data"
 	end
 end
 
 function M:update (dt)
-	local paused = self.paused
+	local paused = true
 	
-	local dt = dt
-	if self.love.keyboard.isDown "f" then
- 		dt = dt * 4
+	if self.love.keyboard.isDown "p" then
 		paused = false
 	end
 	
-	local dt2 = 1 / 32
+	local dt = dt
+	if self.love.keyboard.isDown "f" then
+ 		dt = dt * 8
+		paused = false
+	end
+	
+	local dt2 = 1 / 16
 	
 	if self.love.keyboard.isDown "r" then
 		dt2 = -dt2
