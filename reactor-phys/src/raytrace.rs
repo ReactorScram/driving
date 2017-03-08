@@ -224,6 +224,7 @@ pub fn test_ray_trace (filename: &str, offset: Fx32) -> Result <(), Error> {
 			match trace_result {
 				Ray2TraceResult::Miss => {
 					particle.start = particle.start + (particle.dir * remaining_dt);
+					// Consume the entire remaining tick timestep
 					clock = clock + Fx32::from (remaining_dt);
 					remaining_dt = Fx32::from_int (0);
 				},
@@ -242,8 +243,10 @@ pub fn test_ray_trace (filename: &str, offset: Fx32) -> Result <(), Error> {
 					println! ("Vel. out: {:?}", particle.dir);
 					
 					num_pops += 1;
+					// Consume no time - This may lead to time dilation
+					// for some objects if we run short of CPU
 					//remaining_dt = Fx32::from_int (0);
-					clock = clock + Fx32::from_int (0);
+					//clock = clock + Fx32::from_int (0);
 				},
 				Ray2TraceResult::Hit (t, ccd_pos, normal) => {
 					println! ("{}: Hit from {:?} to {:?}", tick, particle.start, ccd_pos);
@@ -260,8 +263,10 @@ pub fn test_ray_trace (filename: &str, offset: Fx32) -> Result <(), Error> {
 					//particle.dir = normal;
 					num_bounces += 1;
 					// TODO: only works if dt == 1
-					remaining_dt = remaining_dt - Fx32::from (t);
-					clock = clock + Fx32::from (t);
+					// Consume just the right portion of time
+					let consumed_time = remaining_dt * Fx32::from (t);
+					remaining_dt = remaining_dt - consumed_time;
+					clock = clock + consumed_time;
 				},
 			};
 			

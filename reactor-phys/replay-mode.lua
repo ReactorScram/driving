@@ -166,7 +166,7 @@ function M:keypressed (key)
 		print ("Selected " .. self.selected_particle)
 	elseif key == "right" then
 		self.selected_particle = (self.selected_particle + 1) % (#self.particles + 1)
-		print ("Selected " .. self.selected_particle)
+		print ("Selected " .. (self.selected_particle - 1))
 	elseif key == "0" then
 		self:reset_time ()
 	elseif key == "f5" then
