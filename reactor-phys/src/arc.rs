@@ -48,6 +48,8 @@ impl Arc {
 	}
 	
 	pub fn filter_normal (&self, v: Vec2 <Fx32Small>) -> bool {
+		return true;
+		/*
 		if v * self.rejected_normals [0] > 0 {
 			return false;
 		}
@@ -57,6 +59,7 @@ impl Arc {
 		else {
 			return true;
 		}
+		*/
 	}
 	
 	pub fn filter_collision (&self, input: Ray2TraceResult) -> Ray2TraceResult 

@@ -49,8 +49,8 @@ pub fn fold_closer_result (a: Ray2TraceResult, b: Ray2TraceResult) -> Ray2TraceR
 	}
 }
 
-pub fn write_vec2 <T> (writer: &mut T, v: &Vec2 <Fx32>) where T: Write {
-	write! (writer, "v {} 0 {}\n", v.x.to_f64 () / 256.0, v.y.to_f64 () / 256.0).unwrap ();
+pub fn write_vec2 <T> (writer: &mut T, v: &Vec2 <Fx32>, clock: Fx32) where T: Write {
+	write! (writer, "v {} 0 {} {}\n", v.x.to_f64 (), v.y.to_f64 (), clock.to_f64 ()).unwrap ();
 }
 
 pub fn apply_dt (ray: &Ray2, dt: Fx32Small) -> Ray2 {
@@ -198,14 +198,21 @@ pub fn test_ray_trace (filename: &str, offset: Fx32) -> Result <(), Error> {
 			},
 		};
 		
-		write_vec2 (&mut writer, &particle.start);
+		let mut clock = Fx32::from_int (0);
+		
+		write_vec2 (&mut writer, &particle.start, clock);
 		vertex_i += 1;
 		
 		let dt = Fx32::from_q (1, inv_dt).to_small ();
 		
-		for tick in 0..500 {
+		for tick in 0..200 {
+			let mut remaining_dt = Fx32::from_int (1);
+			
+			particle.dir = particle.dir + gravity * remaining_dt;
+			
+			for subtick in 0..4 {
 			let trace_result = {
-				let dt_particle = apply_dt (&particle, dt);
+				let dt_particle = apply_dt (&particle, remaining_dt.to_small ());
 				
 				let point_results = capsule.arcs.iter ().map (|obstacle| ray_trace_arc (&dt_particle, obstacle));
 				
@@ -216,62 +223,56 @@ pub fn test_ray_trace (filename: &str, offset: Fx32) -> Result <(), Error> {
 			
 			match trace_result {
 				Ray2TraceResult::Miss => {
-					//let air_drag = Fx32 { x: particle.dir.length_sq ().x / -16384 };
-					//let air_force = particle.dir * air_drag;
-					let new_dir = particle.dir + gravity * dt;// + Vec2::<Fx32>::from (air_force * dt);
-					/*
-					let sum_dir = particle.dir + new_dir;
-					let average_dir = Vec2::<Fx32> {
-						x: Fx32 { x: sum_dir.x.x / 2 },
-						y: Fx32 { x: sum_dir.y.x / 2 },
-					};
-					*/
-					particle.start = particle.start + (particle.dir * dt);
-					particle.dir = new_dir;
+					particle.start = particle.start + (particle.dir * remaining_dt);
+					clock = clock + Fx32::from (remaining_dt);
+					remaining_dt = Fx32::from_int (0);
 				},
 				Ray2TraceResult::Pop (ccd_pos, normal) => {
 					println! ("{}: Pop from {:?} to {:?}", tick, particle.start, ccd_pos);
 					
-					let reflected_dir = particle.dir.reflect_res (normal, Fx32::from_q (512, 1024).to_small ());
+					let reflected_dir = particle.dir.reflect_res (normal, Fx32::from_q (0, 1024).to_small ());
 					
-					let new_dir = reflected_dir;// + gravity * dt;
-					/*
-					let sum_dir = reflected_dir + new_dir;
-					let average_dir = Vec2::<Fx32> {
-						x: Fx32 { x: sum_dir.x.x / 2 },
-						y: Fx32 { x: sum_dir.y.x / 2 },
-					};
-					*/
+					let new_dir = reflected_dir;
+					
 					particle.start = ccd_pos;// + (average_dir * dt);
 					if particle.dir * normal < 0 {
 						particle.dir = new_dir;
 					}
 					
+					println! ("Vel. out: {:?}", particle.dir);
+					
 					num_pops += 1;
+					//remaining_dt = Fx32::from_int (0);
+					clock = clock + Fx32::from_int (0);
 				},
 				Ray2TraceResult::Hit (t, ccd_pos, normal) => {
 					println! ("{}: Hit from {:?} to {:?}", tick, particle.start, ccd_pos);
 					
 					println! ("Incoming vel {:?}", particle.dir);
 					
-					let new_dir = particle.dir + gravity * (dt * t);
-					
 					particle.start = ccd_pos;
 					if particle.dir * normal < 0 {
-						particle.dir = new_dir.reflect_res (normal, Fx32::from_q (512, 1024).to_small ());
+						particle.dir = particle.dir.reflect_res (normal, Fx32::from_q (512, 1024).to_small ());
 					}
 					
 					println! ("Outgoing vel {:?}", particle.dir);
 					
 					//particle.dir = normal;
 					num_bounces += 1;
+					// TODO: only works if dt == 1
+					remaining_dt = remaining_dt - Fx32::from (t);
+					clock = clock + Fx32::from (t);
 				},
 			};
 			
-			write_vec2 (&mut writer, &particle.start);
+			write_vec2 (&mut writer, &particle.start, clock);
 			vertex_i += 1;
-			
 			num_ticks += 1;
+			
+			if remaining_dt <= Fx32::from_int (0) {
+				break;
+			}
+			}
 			
 			if particle.start.y > 768 {
 				break;

@@ -12,11 +12,12 @@ local function load (reader)
 				current_particle = {}
 			end
 			
-			local sx, sy = line:match "v (%S+) 0 (%S+)"
+			local sx, sy, stime = line:match "v (%S+) 0 (%S+) (%S+)"
 			local x = tonumber (sx)
 			local y = tonumber (sy)
+			local time = tonumber (stime)
 			
-			table.insert (current_particle, {x, y})
+			table.insert (current_particle, {x, y, time})
 		else
 			if current_particle then
 				--print (#current_particle .. " frames")
