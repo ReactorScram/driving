@@ -18,13 +18,6 @@ pub fn write_vec2 <T> (writer: &mut T, v: &Vec2 <Fx32>, clock: Fx32) where T: Wr
 	write! (writer, "v {} 0 {} {}\n", v.x.to_f64 (), v.y.to_f64 (), clock.to_f64 ()).unwrap ();
 }
 
-pub fn apply_dt (ray: &Ray2, dt: Fx32Small) -> Ray2 {
-	Ray2::new (
-		ray.start,
-		ray.get_dir () * dt,
-	)
-}
-
 pub struct PolyCapsule {
 	pub arcs: Vec <Arc>,
 	pub lines: Vec <WideLine>,
@@ -178,7 +171,7 @@ pub fn test_ray_trace (filename: &str, offset: Fx32) -> Result <(), Error> {
 			
 			for subtick in 0..4 {
 			let trace_result = {
-				let dt_particle = apply_dt (&particle, remaining_dt.to_small ());
+				let dt_particle = particle.apply_dt (remaining_dt.to_small ());
 				
 				let point_results = capsule.arcs.iter ().map (|obstacle| ray_trace_arc (&dt_particle, obstacle));
 				

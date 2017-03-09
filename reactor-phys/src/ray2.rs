@@ -1,4 +1,5 @@
 use fx32::Fx32;
+use fx32::Fx32Small;
 use vec2::Vec2;
 
 pub struct Ray2 {
@@ -15,6 +16,13 @@ impl Ray2 {
 			dir: dir,
 			length: dir.length (),
 		}
+	}
+	
+	pub fn apply_dt (&self, dt: Fx32Small) -> Ray2 {
+		Ray2::new (
+			self.start,
+			self.get_dir () * dt,
+		)
 	}
 	
 	pub fn at (&self, t: Fx32) -> Vec2 <Fx32> {
