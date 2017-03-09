@@ -340,6 +340,14 @@ impl Basis2 {
 }
 
 pub fn ray_trace_line_2 (ray: &Ray2, line: &WideLine) -> Ray2TraceResult {
+	// Quick AABB rejection
+	if cmp::min (ray.start.x.x, ray.start.x.x + ray.get_dir ().x.x) > cmp::max (line.start.x.x + line.radius.x, line.end.x.x + line.radius.x) {
+		return Ray2TraceResult::Miss;
+	}
+	if cmp::max (ray.start.x.x, ray.start.x.x + ray.get_dir ().x.x) < cmp::min (line.start.x.x - line.radius.x, line.end.x.x - line.radius.x) {
+		return Ray2TraceResult::Miss;
+	}
+	
 	let line_tangent = line.line_tangent;
 	let line_normal = Vec2::<Fx32Small> {
 		x: (-Fx32::from (line_tangent.y)).to_small (),
