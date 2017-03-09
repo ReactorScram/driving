@@ -172,6 +172,7 @@ pub fn test_ray_trace (filename: &str, offset: Fx32) -> Result <(), Error> {
 	let mut num_bounces = 0;
 	let mut num_pops = 0;
 	let mut num_ticks = 0;
+	let mut num_slips = 0;
 	
 	let inv_dt = 1;
 	let gravity = Vec2::<Fx32> {
@@ -279,6 +280,10 @@ pub fn test_ray_trace (filename: &str, offset: Fx32) -> Result <(), Error> {
 			}
 			}
 			
+			if remaining_dt > Fx32::from_int (0) {
+				num_slips += 1;
+			}
+			
 			if particle.start.y > 768 {
 				break;
 			}
@@ -293,6 +298,7 @@ pub fn test_ray_trace (filename: &str, offset: Fx32) -> Result <(), Error> {
 	println! ("num_bounces: {}", num_bounces);
 	println! ("num_pops: {}", num_pops);
 	println! ("num_ticks: {}", num_ticks);
+	println! ("num_slips: {}", num_slips);
 	
 	Ok (())
 }
