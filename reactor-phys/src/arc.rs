@@ -2,7 +2,7 @@ use circle::Circle;
 use fx32::Fx32;
 use fx32::Fx32Small;
 use vec2::Vec2;
-use raytrace::Ray2TraceResult;
+use raytraceresult::Ray2TraceResult;
 
 /*
 In order to produce polycapsule shapes, we construct an arc which

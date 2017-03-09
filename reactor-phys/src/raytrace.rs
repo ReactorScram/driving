@@ -3,6 +3,7 @@ use circle::Circle;
 use fx32::Fx32;
 use fx32::Fx32Small;
 use ray2::Ray2;
+use raytraceresult::Ray2TraceResult;
 use vec2::Vec2;
 use wide_line::WideLine;
 
@@ -13,44 +14,8 @@ use std::io::prelude::*;
 use std::io::BufWriter;
 use std::fs::File;
 
-#[derive (Clone, Copy)]
-pub enum Ray2TraceResult {
-	Hit (Fx32Small, Vec2 <Fx32>, Vec2 <Fx32Small>),
-	Pop (Vec2 <Fx32>, Vec2 <Fx32Small>),
-	Miss,
-}
-
-pub fn fold_closer_result (a: Ray2TraceResult, b: Ray2TraceResult) -> Ray2TraceResult {
-	match a {
-		Ray2TraceResult::Miss => {
-			return b;
-		},
-		Ray2TraceResult::Hit (a_t, ..) => {
-			match b {
-				Ray2TraceResult::Miss => {
-					return a;
-				},
-				Ray2TraceResult::Hit (b_t, ..) => {
-					if a_t.x < b_t.x {
-						return a;
-					}
-					else {
-						return b;
-					}
-				},
-				Ray2TraceResult::Pop (..) => {
-					return b;
-				}
-			}
-		},
-		Ray2TraceResult::Pop (..) => {
-			return a;
-		},
-	}
-}
-
 pub fn write_vec2 <T> (writer: &mut T, v: &Vec2 <Fx32>, clock: Fx32) where T: Write {
-	//write! (writer, "v {} 0 {} {}\n", v.x.to_f64 (), v.y.to_f64 (), clock.to_f64 ()).unwrap ();
+	write! (writer, "v {} 0 {} {}\n", v.x.to_f64 (), v.y.to_f64 (), clock.to_f64 ()).unwrap ();
 }
 
 pub fn apply_dt (ray: &Ray2, dt: Fx32Small) -> Ray2 {
@@ -219,7 +184,7 @@ pub fn test_ray_trace (filename: &str, offset: Fx32) -> Result <(), Error> {
 				
 				let line_results = capsule.lines.iter ().map (|line| ray_trace_line_2 (&dt_particle, line)); 
 				
-				point_results.chain (line_results).fold ( Ray2TraceResult::Miss, fold_closer_result)
+				point_results.chain (line_results).fold ( Ray2TraceResult::Miss, Ray2TraceResult::fold)
 			};
 			
 			match trace_result {
@@ -246,8 +211,6 @@ pub fn test_ray_trace (filename: &str, offset: Fx32) -> Result <(), Error> {
 					num_pops += 1;
 					// Consume no time - This may lead to time dilation
 					// for some objects if we run short of CPU
-					//remaining_dt = Fx32::from_int (0);
-					//clock = clock + Fx32::from_int (0);
 				},
 				Ray2TraceResult::Hit (t, ccd_pos, normal) => {
 					//println! ("{}: Hit from {:?} to {:?}", tick, particle.start, ccd_pos);
@@ -289,7 +252,7 @@ pub fn test_ray_trace (filename: &str, offset: Fx32) -> Result <(), Error> {
 		}
 		
 		for i in polyline_start..vertex_i - 1 {
-			//try! (write! (writer, "f {} {}\n", i, i + 1));
+			try! (write! (writer, "f {} {}\n", i, i + 1));
 		}
 		polyline_start = vertex_i
 	}
