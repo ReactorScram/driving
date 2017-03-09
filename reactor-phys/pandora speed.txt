@@ -1,0 +1,21 @@
+Pandora 
+
+4.699 s
+851a79e8ec5e51c0a909ffd87502857834b7eeed1f3d6809b58b0c3e54984168
+
+Alexandra
+
+0.224 s
+851a79e8ec5e51c0a909ffd87502857834b7eeed1f3d6809b58b0c3e54984168
+
+38,661 ticks
+
+After sqrt caching
+
+Pandora
+4.135 s
+
+After more caching of ray length
+
+Pandora
+3.898 s

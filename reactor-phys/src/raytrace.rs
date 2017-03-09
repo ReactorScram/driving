@@ -54,10 +54,10 @@ pub fn write_vec2 <T> (writer: &mut T, v: &Vec2 <Fx32>, clock: Fx32) where T: Wr
 }
 
 pub fn apply_dt (ray: &Ray2, dt: Fx32Small) -> Ray2 {
-	Ray2 {
-		start: ray.start,
-		dir: ray.dir * dt,
-	}
+	Ray2::new (
+		ray.start,
+		ray.get_dir () * dt,
+	)
 }
 
 pub struct PolyCapsule {
@@ -188,16 +188,16 @@ pub fn test_ray_trace (filename: &str, offset: Fx32) -> Result <(), Error> {
 	
 	for x in 0..128 {
 		let x = x * 4;
-		let mut particle = Ray2 {
-			start: Vec2 {
+		let mut particle = Ray2::new (
+			Vec2 {
 				x: Fx32::from_q (x * 2, scale * 2) + offset,
 				y: Fx32::from_q (0, scale)
 			},
-			dir: Vec2 {
+			Vec2 {
 				x: Fx32::from_q (0, scale),
 				y: Fx32::from_q (1, scale),
 			},
-		};
+		);
 		
 		let mut clock = Fx32::from_int (0);
 		
@@ -209,7 +209,7 @@ pub fn test_ray_trace (filename: &str, offset: Fx32) -> Result <(), Error> {
 		for tick in 0..200 {
 			let mut remaining_dt = Fx32::from_int (1);
 			
-			particle.dir = particle.dir + gravity * remaining_dt;
+			particle = Ray2::new (particle.start, particle.get_dir () + gravity * remaining_dt);
 			
 			for subtick in 0..4 {
 			let trace_result = {
@@ -224,7 +224,7 @@ pub fn test_ray_trace (filename: &str, offset: Fx32) -> Result <(), Error> {
 			
 			match trace_result {
 				Ray2TraceResult::Miss => {
-					particle.start = particle.start + (particle.dir * remaining_dt);
+					particle.start = particle.start + (particle.get_dir () * remaining_dt);
 					// Consume the entire remaining tick timestep
 					clock = clock + Fx32::from (remaining_dt);
 					remaining_dt = Fx32::from_int (0);
@@ -232,16 +232,16 @@ pub fn test_ray_trace (filename: &str, offset: Fx32) -> Result <(), Error> {
 				Ray2TraceResult::Pop (ccd_pos, normal) => {
 					println! ("{}: Pop from {:?} to {:?}", tick, particle.start, ccd_pos);
 					
-					let reflected_dir = particle.dir.reflect_res (normal, Fx32::from_q (0, 1024).to_small ());
+					let reflected_dir = particle.get_dir ().reflect_res (normal, Fx32::from_q (0, 1024).to_small ());
 					
 					let new_dir = reflected_dir;
 					
 					particle.start = ccd_pos;// + (average_dir * dt);
-					if particle.dir * normal < 0 {
-						particle.dir = new_dir;
+					if particle.get_dir () * normal < 0 {
+						particle = Ray2::new (particle.start, new_dir);
 					}
 					
-					println! ("Vel. out: {:?}", particle.dir);
+					println! ("Vel. out: {:?}", particle.get_dir ());
 					
 					num_pops += 1;
 					// Consume no time - This may lead to time dilation
@@ -252,16 +252,15 @@ pub fn test_ray_trace (filename: &str, offset: Fx32) -> Result <(), Error> {
 				Ray2TraceResult::Hit (t, ccd_pos, normal) => {
 					println! ("{}: Hit from {:?} to {:?}", tick, particle.start, ccd_pos);
 					
-					println! ("Incoming vel {:?}", particle.dir);
+					println! ("Incoming vel {:?}", particle.get_dir ());
 					
 					particle.start = ccd_pos;
-					if particle.dir * normal < 0 {
-						particle.dir = particle.dir.reflect_res (normal, Fx32::from_q (512, 1024).to_small ());
+					if particle.get_dir () * normal < 0 {
+						particle = Ray2::new (particle.start, particle.get_dir ().reflect_res (normal, Fx32::from_q (512, 1024).to_small ()));
 					}
 					
-					println! ("Outgoing vel {:?}", particle.dir);
+					println! ("Outgoing vel {:?}", particle.get_dir ());
 					
-					//particle.dir = normal;
 					num_bounces += 1;
 					// TODO: only works if dt == 1
 					// Consume just the right portion of time
@@ -312,10 +311,10 @@ pub struct Basis2 {
 // Such that the ray is the X axis
 pub fn get_ray_basis (ray: &Ray2, ray_length: Fx32) -> Basis2 {
 	let basis_x_big = if ray_length == 0 {
-		ray.dir
+		ray.get_dir ()
 	}
 	else {
-		ray.dir / ray_length
+		ray.get_dir () / ray_length
 	};
 	
 	Basis2 {
@@ -347,7 +346,7 @@ pub fn ray_trace_line_2 (ray: &Ray2, line: &WideLine) -> Ray2TraceResult {
 		y: line_tangent.x,
 	};
 	
-	let ray_end = ray.start + ray.dir;
+	let ray_end = ray.start + ray.get_dir ();
 	
 	let start_along = (ray.start - line.start) * line_tangent;
 	let end_along = (ray_end - line.start) * line_tangent;
@@ -374,7 +373,7 @@ pub fn ray_trace_line_2 (ray: &Ray2, line: &WideLine) -> Ray2TraceResult {
 	};
 	let big_normal: Vec2 <Fx32> = line_normal.into ();
 	
-	if ray.dir * big_normal > 0 {
+	if ray.get_dir () * big_normal > 0 {
 		// Ray is leaving the half-plane, leave it be
 		return Ray2TraceResult::Miss;
 	}
@@ -410,13 +409,13 @@ pub fn ray_trace_line_2 (ray: &Ray2, line: &WideLine) -> Ray2TraceResult {
 		);
 	}
 	
-	let ccd_pos = ray.start + ray.dir * t;
+	let ccd_pos = ray.start + ray.get_dir () * t;
 	
 	return Ray2TraceResult::Hit (t.to_small (), ccd_pos, line_normal);
 }
 
 pub fn ray_trace_circle_2 (ray: &Ray2, circle: &Circle) -> Ray2TraceResult {
-	let ray_length = ray.dir.length ();
+	let ray_length = ray.get_length ();
 	let basis = get_ray_basis (ray, ray_length);
 	
 	let center_in_ray_space = basis.to_space (&(circle.center - ray.start));
@@ -444,7 +443,7 @@ pub fn ray_trace_circle_2 (ray: &Ray2, circle: &Circle) -> Ray2TraceResult {
 	let t = Fx32 { x: cmp::max (t.x, Fx32::from_int (0).x) }.to_small ();
 	
 	if t <= 1 {
-		let ccd_pos = ray.start + ray.dir * t;
+		let ccd_pos = ray.start + ray.get_dir () * t;
 		let disp = ccd_pos - circle.center;
 		let dist_sq = disp.length_sq ();
 		let ccd_pos = if dist_sq < circle.radius.square () 
