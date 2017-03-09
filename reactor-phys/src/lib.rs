@@ -1,4 +1,5 @@
 pub mod arc;
+pub mod basis;
 pub mod circle;
 pub mod fx32;
 pub mod polycapsule;

@@ -1,4 +1,5 @@
 use arc::Arc;
+use basis::Basis2;
 use circle::Circle;
 use fx32::Fx32;
 use fx32::Fx32Small;
@@ -178,43 +179,6 @@ pub fn test_ray_trace (filename: &str, offset: Fx32) -> Result <(), Error> {
 	Ok (())
 }
 
-pub struct Basis2 {
-	pub x: Vec2 <Fx32Small>,
-	pub y: Vec2 <Fx32Small>,
-}
-
-// Constructs a basis to ray space
-// Such that the ray is the X axis
-pub fn get_ray_basis (ray: &Ray2, ray_length: Fx32) -> Basis2 {
-	let basis_x_big = if ray_length == 0 {
-		ray.get_dir ()
-	}
-	else {
-		ray.get_dir () / ray_length
-	};
-	
-	Basis2 {
-		x: basis_x_big.to_small (),
-		y: basis_x_big.cross ().to_small (),
-	}
-}
-
-impl Basis2 {
-	pub fn to_space (&self, v: &Vec2 <Fx32>) -> Vec2 <Fx32> {
-		Vec2::<Fx32> {
-			x: *v * self.x,
-			y: *v * self.y,
-		}
-	}
-	
-	pub fn from_space (&self, v: &Vec2 <Fx32>) -> Vec2 <Fx32> {
-		Vec2::<Fx32> {
-			x: (v.x * self.x.x) + (v.y * self.y.x),
-			y: (v.x * self.x.y) + (v.y * self.y.y),
-		}
-	}
-}
-
 pub fn ray_trace_line_2 (ray: &Ray2, line: &WideLine) -> Ray2TraceResult {
 	// Quick AABB rejection
 	if cmp::min (ray.start.x.x, ray.start.x.x + ray.get_dir ().x.x) > cmp::max (line.start.x.x + line.radius.x, line.end.x.x + line.radius.x) {
@@ -307,7 +271,7 @@ pub fn ray_trace_circle_2 (ray: &Ray2, circle: &Circle) -> Ray2TraceResult {
 		return Ray2TraceResult::Miss;
 	}
 	
-	let basis = get_ray_basis (ray, ray_length);
+	let basis = Basis2::new (ray);
 	
 	let center_in_ray_space = basis.to_space (&(circle.center - ray.start));
 	
