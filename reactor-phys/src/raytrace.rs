@@ -418,9 +418,9 @@ pub fn ray_trace_circle_2 (ray: &Ray2, circle: &Circle) -> Ray2TraceResult {
 	let ray_length = ray.get_length ();
 	
 	// Early rejection test
-	if (ray.start - circle.center).length_sq () > ray.get_length () + circle.radius
+	if (ray.start - circle.center).length_sq () > (ray.get_length () + circle.radius + Fx32::from_q (1, 128)).square ()
 	{
-		return Ray2TraceResult::Miss;
+		//return Ray2TraceResult::Miss;
 	}
 	
 	let basis = get_ray_basis (ray, ray_length);
