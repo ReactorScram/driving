@@ -75,10 +75,10 @@ impl PolyCapsule {
 		let lines = {
 			let mut lines = vec! [];
 			
-			lines.push (WideLine { start: points [0], end: points [1], radius: radius });
+			lines.push (WideLine::new (points [0], points [1], radius));
 			
 			for i in 1..count {
-				lines.push (WideLine { start: points [i - 1], end: points [i], radius: radius });
+				lines.push (WideLine::new (points [i - 1], points [i], radius));
 			}
 			
 			lines
@@ -132,7 +132,7 @@ impl PolyCapsule {
 	{
 		PolyCapsule {
 			arcs: self.arcs.iter ().map (|a| Arc { circle: Circle { center: f (a.circle.center), radius: a.circle.radius }, rejected_normals: a.rejected_normals }).collect (),
-			lines: self.lines.iter ().map (|l| WideLine { start: f (l.start), end: f (l.end), radius: l.radius }).collect (),
+			lines: self.lines.iter ().map (|l| WideLine::new (f (l.start), f (l.end), l.radius)).collect (),
 		}
 	}
 	
@@ -341,12 +341,7 @@ impl Basis2 {
 }
 
 pub fn ray_trace_line_2 (ray: &Ray2, line: &WideLine) -> Ray2TraceResult {
-	let line_tangent: Vec2 <Fx32> = line.end - line.start;
-	let huge_normal = line_tangent.cross ();
-	let line_tangent = Vec2::<Fx32> {
-		x: line_tangent.x * Fx32::from_q (1, 256),
-		y: line_tangent.y * Fx32::from_q (1, 256),
-	}.normalized ();
+	let line_tangent = line.line_tangent;
 	let line_normal = Vec2::<Fx32Small> {
 		x: (-Fx32::from (line_tangent.y)).to_small (),
 		y: line_tangent.x,
