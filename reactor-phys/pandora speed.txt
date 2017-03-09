@@ -26,3 +26,8 @@ Pandora
 
 Was not a huge win - Didn't even change anything, plus it needed a bias wtf
 
+Removing file I/O
+
+Pandora
+1.164 s
+0.262 s

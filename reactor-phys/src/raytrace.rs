@@ -50,7 +50,7 @@ pub fn fold_closer_result (a: Ray2TraceResult, b: Ray2TraceResult) -> Ray2TraceR
 }
 
 pub fn write_vec2 <T> (writer: &mut T, v: &Vec2 <Fx32>, clock: Fx32) where T: Write {
-	write! (writer, "v {} 0 {} {}\n", v.x.to_f64 (), v.y.to_f64 (), clock.to_f64 ()).unwrap ();
+	//write! (writer, "v {} 0 {} {}\n", v.x.to_f64 (), v.y.to_f64 (), clock.to_f64 ()).unwrap ();
 }
 
 pub fn apply_dt (ray: &Ray2, dt: Fx32Small) -> Ray2 {
@@ -230,7 +230,7 @@ pub fn test_ray_trace (filename: &str, offset: Fx32) -> Result <(), Error> {
 					remaining_dt = Fx32::from_int (0);
 				},
 				Ray2TraceResult::Pop (ccd_pos, normal) => {
-					println! ("{}: Pop from {:?} to {:?}", tick, particle.start, ccd_pos);
+					//println! ("{}: Pop from {:?} to {:?}", tick, particle.start, ccd_pos);
 					
 					let reflected_dir = particle.get_dir ().reflect_res (normal, Fx32::from_q (0, 1024).to_small ());
 					
@@ -241,7 +241,7 @@ pub fn test_ray_trace (filename: &str, offset: Fx32) -> Result <(), Error> {
 						particle = Ray2::new (particle.start, new_dir);
 					}
 					
-					println! ("Vel. out: {:?}", particle.get_dir ());
+					//println! ("Vel. out: {:?}", particle.get_dir ());
 					
 					num_pops += 1;
 					// Consume no time - This may lead to time dilation
@@ -250,16 +250,16 @@ pub fn test_ray_trace (filename: &str, offset: Fx32) -> Result <(), Error> {
 					//clock = clock + Fx32::from_int (0);
 				},
 				Ray2TraceResult::Hit (t, ccd_pos, normal) => {
-					println! ("{}: Hit from {:?} to {:?}", tick, particle.start, ccd_pos);
+					//println! ("{}: Hit from {:?} to {:?}", tick, particle.start, ccd_pos);
 					
-					println! ("Incoming vel {:?}", particle.get_dir ());
+					//println! ("Incoming vel {:?}", particle.get_dir ());
 					
 					particle.start = ccd_pos;
 					if particle.get_dir () * normal < 0 {
 						particle = Ray2::new (particle.start, particle.get_dir ().reflect_res (normal, Fx32::from_q (512, 1024).to_small ()));
 					}
 					
-					println! ("Outgoing vel {:?}", particle.get_dir ());
+					//println! ("Outgoing vel {:?}", particle.get_dir ());
 					
 					num_bounces += 1;
 					// TODO: only works if dt == 1
@@ -289,7 +289,7 @@ pub fn test_ray_trace (filename: &str, offset: Fx32) -> Result <(), Error> {
 		}
 		
 		for i in polyline_start..vertex_i - 1 {
-			try! (write! (writer, "f {} {}\n", i, i + 1));
+			//try! (write! (writer, "f {} {}\n", i, i + 1));
 		}
 		polyline_start = vertex_i
 	}
