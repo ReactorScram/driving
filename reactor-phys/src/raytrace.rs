@@ -416,6 +416,13 @@ pub fn ray_trace_line_2 (ray: &Ray2, line: &WideLine) -> Ray2TraceResult {
 
 pub fn ray_trace_circle_2 (ray: &Ray2, circle: &Circle) -> Ray2TraceResult {
 	let ray_length = ray.get_length ();
+	
+	// Early rejection test
+	if (ray.start - circle.center).length_sq () > ray.get_length () + circle.radius
+	{
+		return Ray2TraceResult::Miss;
+	}
+	
 	let basis = get_ray_basis (ray, ray_length);
 	
 	let center_in_ray_space = basis.to_space (&(circle.center - ray.start));

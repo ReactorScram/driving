@@ -19,3 +19,7 @@ After more caching of ray length
 
 Pandora
 3.898 s
+
+Early rejection test for circle colliders - huge win
+Pandora
+2.898 s
