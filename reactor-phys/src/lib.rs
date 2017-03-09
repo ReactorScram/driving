@@ -1,6 +1,7 @@
 pub mod arc;
 pub mod circle;
 pub mod fx32;
+pub mod polycapsule;
 pub mod ray2;
 pub mod raytrace;
 pub mod raytraceresult;
