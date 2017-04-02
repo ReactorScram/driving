@@ -3,6 +3,10 @@ name = "reactor_phys"
 version = "0.1.0"
 authors = ["Anonymous <_>"]
 
+[lib]
+name = "cherenkov"
+crate-type = ["cdylib"]
+
 [dependencies]
 
 byteorder = "1"
