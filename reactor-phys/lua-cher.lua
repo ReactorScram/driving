@@ -3,17 +3,26 @@ local ffi = require "ffi"
 local cher = ffi.load "target/debug/libcherenkov.so"
 
 ffi.cdef [[
-int32_t cher_add (int32_t a, int32_t b);
+typedef void * CherPtr;
 
-typedef void * CherCtx;
+typedef struct {
+	int32_t x;
+	int32_t y;
+} PlayerFrame;
 
-CherCtx cher_new (float radius);
-void cher_delete (CherCtx);
+CherPtr cher_new (float radius);
+void cher_step (CherPtr);
+PlayerFrame cher_get_player (CherPtr);
+void cher_delete (CherPtr);
 ]]
-
-print ("3 + 4 =")
-print (cher.cher_add (3, 4))
 
 local ctx = ffi.gc (cher.cher_new (5.0), cher.cher_delete)
 
 print ("Context: ", ctx)
+
+for i = 1, 10 do
+	cher.cher_step (ctx)
+	
+	local player_frame = cher.cher_get_player (ctx)
+	print (player_frame.x, player_frame.y)
+end

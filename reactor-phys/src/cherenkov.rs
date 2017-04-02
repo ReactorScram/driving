@@ -11,9 +11,10 @@ pub struct CherenkovSim {
 	pub player: Circle,
 }
 
-#[no_mangle]
-pub extern fn cher_add (a: i32, b: i32) -> i32 {
-	a + b
+#[repr(C)]
+pub struct PlayerFrame {
+	pub x: i32,
+	pub y: i32,
 }
 
 #[no_mangle]
@@ -31,6 +32,25 @@ pub extern fn cher_new (radius: f32) -> *mut CherenkovSim {
 	
 	unsafe {
 		transmute (Box::new (ctx))
+	}
+}
+
+#[no_mangle]
+pub extern fn cher_step (opaque: *mut CherenkovSim) {
+	let context = unsafe { &mut*opaque };
+	
+	context.player.center.x = context.player.center.x + Fx32::from_q (1, 1);
+}
+
+#[no_mangle]
+pub extern fn cher_get_player (opaque: *const CherenkovSim) -> PlayerFrame {
+	let context = unsafe { &*opaque };
+	
+	let pos = context.player.center;
+	
+	PlayerFrame {
+		x: pos.x.x,
+		y: pos.y.x,
 	}
 }
 
