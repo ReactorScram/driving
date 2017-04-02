@@ -115,7 +115,7 @@ pub fn test_ray_trace (filename: &str, offset: Fx32) -> Result <(), Error> {
 					
 					let new_dir = reflected_dir;
 					
-					particle.start = ccd_pos;// + (average_dir * dt);
+					particle.start = ccd_pos;
 					if particle.get_dir () * normal < 0 {
 						particle = Ray2::new (particle.start, new_dir);
 					}
