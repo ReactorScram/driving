@@ -19,7 +19,7 @@ mod tests {
 	
 	#[test]
 	fn svg () {
-		raytrace::test_ray_trace ();
+		raytrace::test_ray_trace ("lines.obj", Fx32::from_q (0, 1)).unwrap ();
 	}
 	
 	#[test]
