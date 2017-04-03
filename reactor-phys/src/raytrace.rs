@@ -115,7 +115,7 @@ pub fn test_ray_trace (filename: &str, offset: Fx32) -> Result <(), Error> {
 					
 					let new_dir = reflected_dir;
 					
-					particle.start = ccd_pos;
+					particle.start = ccd_pos;// + (average_dir * dt);
 					if particle.get_dir () * normal < 0 {
 						particle = Ray2::new (particle.start, new_dir);
 					}
@@ -265,8 +265,17 @@ pub fn ray_trace_line_2 (ray: &Ray2, line: &WideLine) -> Ray2TraceResult {
 pub fn ray_trace_circle_2 (ray: &Ray2, circle: &Circle) -> Ray2TraceResult {
 	let ray_length = ray.get_length ();
 	
+	let diff = ray.start - circle.center;
+	
+	let max_diff = ray.get_length () + circle.radius + Fx32::from_q (3, 2);
+	
+	// Earlier rejection test
+	if diff.x.abs () > max_diff || diff.y.abs () > max_diff {
+		return Ray2TraceResult::Miss;
+	}
+	
 	// Early rejection test
-	if (ray.start - circle.center).length_sq () > (ray.get_length () + circle.radius + Fx32::from_q (3, 2)).square ()
+	if diff.length_sq () > max_diff.square ()
 	{
 		return Ray2TraceResult::Miss;
 	}

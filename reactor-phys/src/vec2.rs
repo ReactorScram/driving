@@ -57,14 +57,14 @@ impl <Real: Into <Fx32> + From <Fx32> + From <Fx32Small> + Neg + Mul <Fx32> + Mu
 		}
 	}
 	
-	// o should be normalized
+	// n should be normalized
 	pub fn reflect_res (self, n: Vec2 <Fx32Small>, restitution: Fx32Small) -> Vec2 <Real> {
 		let projection = Fx32::from (self * n);
 		if projection >= 0 {
 			return self;
 		}
 		
-		let double_proj = Fx32 { x: (projection + projection * restitution).x };
+		let double_proj = Fx32::from (projection + projection * restitution);
 		let offset = Vec2::<Fx32> {
 			x: n.x * double_proj,
 			y: n.y * double_proj,

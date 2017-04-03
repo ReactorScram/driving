@@ -22,17 +22,17 @@ pub struct PodVec2 {
 }
 
 #[no_mangle]
-pub extern fn cher_new (radius: f32) -> *mut CherenkovSim {
+pub extern fn cher_new (radius: f32, player_start: PodVec2) -> *mut CherenkovSim {
 	let ctx = CherenkovSim {
 		obstacles: vec! [],
 		player: Ray2::new (
 			Vec2 {
-				x: Fx32::from_q (0, 1),
-				y: Fx32::from_q (0, 1),
+				x: Fx32 {x: player_start.x},
+				y: Fx32 {x: player_start.y},
 			},
 			Vec2 {
 				x: Fx32::from_q (0, 1),
-				y: Fx32::from_q (0, 1),
+				y: Fx32::from_q (1, 1),
 			},
 		),
 		radius: Fx32::from_float (radius),
@@ -87,19 +87,12 @@ pub extern fn cher_delete (opaque: *mut CherenkovSim) {
 }
 
 fn step_sim (ctx: &mut CherenkovSim) {
-	let scale = 1;
-	
-	let radius = Fx32::from_q (20, scale);
-	
-	let inv_dt = 8;
 	let gravity = Vec2::<Fx32> {
-		x: Fx32::from_q (0, 1),
-		y: Fx32::from_q (1, 1),
+		x: Fx32::from_q (0, 8),
+		y: Fx32::from_q (1, 8),
 	};
 	
 	let mut clock = Fx32::from_int (0);
-	
-	let dt = Fx32::from_q (1, inv_dt).to_small ();
 	
 	let mut remaining_dt = Fx32::from_int (1);
 	
@@ -124,7 +117,7 @@ fn step_sim (ctx: &mut CherenkovSim) {
 				remaining_dt = Fx32::from_int (0);
 			},
 			Ray2TraceResult::Pop (ccd_pos, normal) => {
-				let reflected_dir = particle.get_dir ().reflect_res (normal, Fx32::from_q (0, 1024).to_small ());
+				let reflected_dir = particle.get_dir ().reflect_res (Vec2::<Fx32>::from (normal).normalized (), Fx32::from_q (0, 1024).to_small ());
 				
 				let new_dir = reflected_dir;
 				
@@ -135,18 +128,21 @@ fn step_sim (ctx: &mut CherenkovSim) {
 				
 				// Consume no time - This may lead to time dilation
 				// for some objects if we run short of CPU
+				
+				//println! ("Pop");
 			},
 			Ray2TraceResult::Hit (t, ccd_pos, normal) => {
-				particle.start = ccd_pos;
-				if particle.get_dir () * normal < 0 {
-					particle = Ray2::new (particle.start, particle.get_dir ().reflect_res (normal, Fx32::from_q (512, 1024).to_small ()));
-				}
+				let old_vel = particle.get_dir ();
+				
+				particle = Ray2::new (ccd_pos, particle.get_dir ().reflect_res (Vec2::<Fx32>::from (normal).normalized (), Fx32::from_q (512, 1024).to_small ()));
 				
 				// TODO: only works if dt == 1
 				// Consume just the right portion of time
 				let consumed_time = remaining_dt * Fx32::from (t);
 				remaining_dt = remaining_dt - consumed_time;
 				clock = clock + consumed_time;
+				
+				//println! ("Hit {:?}, {:?}, {:?}", Vec2::<Fx32>::from (normal).normalized (), old_vel, particle.get_dir ());
 			},
 		};
 		
